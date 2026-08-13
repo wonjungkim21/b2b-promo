@@ -52,7 +52,6 @@ flowchart LR
     Admin --> UC11
     Admin --> UC12
 
-    UC2 -. include .-> UC3
     UC5 -. include .-> UC4
     UC6 -. include .-> UC5
     UC7 -. include .-> UC6
@@ -63,3 +62,4 @@ flowchart LR
 
 - UC-7(응모 확정)은 3장 EventApplication/PointTransaction 엔티티 갱신과 직결되며, 도메인 정의서 5.1/5.2/5.3/5.7/5.8/5.9 규칙의 적용을 받는다.
 - UC-9/UC-10(이벤트 등록/수정)은 동일한 Event 필수/선택 필드 유효성 규칙(3.2)을 공유한다.
+- UC-2(목록 조회)와 UC-3(상세 조회)는 별도 include 관계로 표시하지 않는다. 목록만 보고 상세를 보지 않을 수 있어 "항상 함께 실행됨"을 뜻하는 include 관계와 맞지 않기 때문이다.
