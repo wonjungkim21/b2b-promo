@@ -1,0 +1,524 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "프레시밀 포인트 이벤트 응모 API",
+    "description": "freshmeal-point-event 프로젝트의 REST API 명세. 사용자는 보유 포인트로 진행중 이벤트에 응모하고, 관리자는 이벤트를 등록·관리한다. 1,000포인트 = 응모 1회 고정. 각 API의 description에 대응하는 유스케이스(UC-0~UC-12) 번호를 트레이스 태그로 표기한다.",
+    "version": "1.0.0"
+  },
+  "servers": [
+    {
+      "url": "/api",
+      "description": "기본 API 서버"
+    }
+  ],
+  "tags": [
+    { "name": "auth", "description": "회원가입/로그인/토큰 관리 (UC-0, UC-1)" },
+    { "name": "me", "description": "내 정보 조회 (UC-4)" },
+    { "name": "events", "description": "이벤트 조회/관리 (UC-2, UC-3, UC-9~UC-11)" },
+    { "name": "applications", "description": "이벤트 응모 및 응모 내역 조회 (UC-5~UC-8, UC-12)" }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "로그인(POST /api/auth/login) 또는 토큰 재발급(POST /api/auth/refresh)으로 발급받은 Access Token을 `Authorization: Bearer {accessToken}` 헤더로 전달한다."
+      }
+    },
+    "schemas": {
+      "ErrorResponse": {
+        "type": "object",
+        "description": "모든 API가 공통으로 사용하는 에러 응답 형식",
+        "required": ["error"],
+        "properties": {
+          "error": {
+            "type": "object",
+            "required": ["code", "message"],
+            "properties": {
+              "code": {
+                "type": "string",
+                "description": "에러 코드",
+                "enum": [
+                  "VALIDATION_ERROR",
+                  "DUPLICATE_LOGIN_ID",
+                  "AUTHENTICATION_FAILED",
+                  "UNAUTHORIZED",
+                  "FORBIDDEN",
+                  "NOT_FOUND",
+                  "EVENT_NOT_ONGOING",
+                  "INSUFFICIENT_POINTS",
+                  "INVALID_APPLY_COUNT",
+                  "INVALID_STATUS_TRANSITION",
+                  "INTERNAL_SERVER_ERROR"
+                ],
+                "example": "INSUFFICIENT_POINTS"
+              },
+              "message": {
+                "type": "string",
+                "description": "사용자에게 보여줄 안내 메시지",
+                "example": "보유 포인트가 부족하여 응모할 수 없습니다."
+              }
+            }
+          }
+        }
+      },
+      "SignupRequest": {
+        "type": "object",
+        "required": ["name", "loginId", "password"],
+        "properties": {
+          "name": { "type": "string", "description": "표시 이름", "example": "홍길동" },
+          "loginId": { "type": "string", "description": "로그인 식별자(이메일 등), 유일값", "example": "hong@example.com" },
+          "password": { "type": "string", "format": "password", "description": "비밀번호(서버에 bcrypt 해시로 저장)", "example": "password1234" }
+        }
+      },
+      "SignupResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64", "example": 1 },
+          "name": { "type": "string", "example": "홍길동" },
+          "loginId": { "type": "string", "example": "hong@example.com" },
+          "role": { "type": "string", "enum": ["user", "admin"], "example": "user" }
+        }
+      },
+      "LoginRequest": {
+        "type": "object",
+        "required": ["loginId", "password"],
+        "properties": {
+          "loginId": { "type": "string", "example": "hong@example.com" },
+          "password": { "type": "string", "format": "password", "example": "password1234" }
+        }
+      },
+      "LoginResponse": {
+        "type": "object",
+        "properties": {
+          "accessToken": { "type": "string", "description": "짧은 만료의 Access Token" },
+          "refreshToken": { "type": "string", "description": "긴 만료의 Refresh Token" },
+          "user": {
+            "type": "object",
+            "properties": {
+              "id": { "type": "integer", "format": "int64", "example": 1 },
+              "name": { "type": "string", "example": "홍길동" },
+              "role": { "type": "string", "enum": ["user", "admin"], "example": "user" }
+            }
+          }
+        }
+      },
+      "RefreshRequest": {
+        "type": "object",
+        "required": ["refreshToken"],
+        "properties": {
+          "refreshToken": { "type": "string" }
+        }
+      },
+      "RefreshResponse": {
+        "type": "object",
+        "properties": {
+          "accessToken": { "type": "string", "description": "재발급된 Access Token" }
+        }
+      },
+      "LogoutRequest": {
+        "type": "object",
+        "required": ["refreshToken"],
+        "properties": {
+          "refreshToken": { "type": "string", "description": "폐기(revoke)할 Refresh Token" }
+        }
+      },
+      "MeResponse": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64", "example": 1 },
+          "name": { "type": "string", "example": "홍길동" },
+          "role": { "type": "string", "enum": ["user", "admin"], "example": "user" },
+          "pointBalance": { "type": "integer", "format": "int64", "description": "현재 보유 포인트 (0 이상)", "example": 5000 }
+        }
+      },
+      "EventStatus": {
+        "type": "string",
+        "enum": ["예정", "진행중", "종료"],
+        "description": "이벤트 진행 상태. 전이는 예정→진행중→종료 순서만 허용된다."
+      },
+      "Event": {
+        "type": "object",
+        "properties": {
+          "id": { "type": "integer", "format": "int64", "example": 1 },
+          "title": { "type": "string", "description": "이벤트명", "example": "여름맞이 포인트 응모 이벤트" },
+          "imageUrl": { "type": "string", "nullable": true, "description": "이벤트 이미지 URL (선택)", "example": "https://cdn.example.com/events/1.png" },
+          "startAt": { "type": "string", "format": "date-time", "description": "이벤트 시작일시" },
+          "endAt": { "type": "string", "format": "date-time", "description": "이벤트 종료일시 (시작일시보다 이후여야 함)" },
+          "prizeDescription": { "type": "string", "nullable": true, "description": "경품/혜택 설명 (선택)", "example": "추첨을 통해 상품권 지급" },
+          "status": { "$ref": "#/components/schemas/EventStatus" }
+        }
+      },
+      "EventCreateRequest": {
+        "type": "object",
+        "required": ["title", "startAt", "endAt", "status"],
+        "properties": {
+          "title": { "type": "string", "example": "여름맞이 포인트 응모 이벤트" },
+          "imageUrl": { "type": "string", "nullable": true },
+          "startAt": { "type": "string", "format": "date-time" },
+          "endAt": { "type": "string", "format": "date-time" },
+          "prizeDescription": { "type": "string", "nullable": true },
+          "status": { "$ref": "#/components/schemas/EventStatus" }
+        }
+      },
+      "EventUpdateRequest": {
+        "$ref": "#/components/schemas/EventCreateRequest"
+      },
+      "EventStatusUpdateRequest": {
+        "type": "object",
+        "required": ["status"],
+        "properties": {
+          "status": { "$ref": "#/components/schemas/EventStatus" }
+        }
+      },
+      "ApplyRequest": {
+        "type": "object",
+        "required": ["count", "idempotencyKey"],
+        "properties": {
+          "count": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "응모 횟수(1 이상 정수). 0 이하/소수/비숫자 값은 거부된다(5.3).",
+            "example": 2
+          },
+          "idempotencyKey": {
+            "type": "string",
+            "description": "요청 재시도 시 중복 차감을 방지하기 위한 멱등키(유일값). 동일 키로 재요청하면 재차감 없이 이전 처리 결과를 그대로 반환한다(5.8).",
+            "example": "5f2a8c3e-7b1a-4e5a-9c2a-1a2b3c4d5e6f"
+          }
+        }
+      },
+      "ApplyResponse": {
+        "type": "object",
+        "description": "응모 확정 처리 결과. 포인트 차감·PointTransaction 생성·EventApplication 누적 갱신은 하나의 트랜잭션으로 원자적으로 처리된다(5.7).",
+        "properties": {
+          "eventId": { "type": "integer", "format": "int64", "example": 1 },
+          "pointBalance": { "type": "integer", "format": "int64", "description": "응모 처리 후 갱신된 보유 포인트", "example": 3000 },
+          "totalCount": { "type": "integer", "description": "해당 이벤트에 대한 누적 응모 횟수", "example": 5 },
+          "totalPointsUsed": { "type": "integer", "format": "int64", "description": "해당 이벤트에 대한 누적 사용 포인트", "example": 5000 },
+          "lastAppliedAt": { "type": "string", "format": "date-time", "description": "최근 응모 일시" }
+        }
+      },
+      "MyApplicationItem": {
+        "type": "object",
+        "properties": {
+          "eventId": { "type": "integer", "format": "int64", "example": 1 },
+          "eventTitle": { "type": "string", "example": "여름맞이 포인트 응모 이벤트" },
+          "eventStatus": { "$ref": "#/components/schemas/EventStatus" },
+          "totalCount": { "type": "integer", "example": 5 },
+          "totalPointsUsed": { "type": "integer", "format": "int64", "example": 5000 },
+          "lastAppliedAt": { "type": "string", "format": "date-time" }
+        }
+      },
+      "ApplicationSummaryResponse": {
+        "type": "object",
+        "properties": {
+          "eventId": { "type": "integer", "format": "int64", "example": 1 },
+          "totalApplyCount": { "type": "integer", "description": "해당 이벤트의 전체 누적 응모 횟수 (SUM totalCount)", "example": 42 },
+          "participantCount": { "type": "integer", "description": "해당 이벤트에 참여한 사용자 수 (EventApplication row count)", "example": 17 }
+        }
+      }
+    },
+    "responses": {
+      "BadRequest": {
+        "description": "요청 값이 유효하지 않음 (예: 필수값 누락, 응모 횟수 유효성 위반(5.3), 기간 오류)",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
+      "Unauthorized": {
+        "description": "인증 실패 (토큰 없음/만료/위조) 또는 로그인 자격 증명 불일치",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
+      "Forbidden": {
+        "description": "권한 없음 (관리자 전용 API에 role=user로 접근)",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
+      "NotFound": {
+        "description": "대상 리소스가 존재하지 않음",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      },
+      "Conflict": {
+        "description": "리소스 상태 충돌 (예: loginId 중복, 이벤트가 진행중이 아니어서 응모 거부(5.1), 잘못된 상태 전이)",
+        "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+      }
+    }
+  },
+  "paths": {
+    "/auth/signup": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "회원가입",
+        "description": "UC-0 회원가입. name, loginId, password를 입력받아 role=user로 계정을 생성한다. loginId는 유일해야 하며 중복 시 409로 거부한다. pointBalance 초기값 부여 정책은 MVP 범위 밖이며 시딩 데이터로 이미 채워진 것으로 가정한다.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SignupRequest" } } }
+        },
+        "responses": {
+          "201": {
+            "description": "회원가입 성공",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/SignupResponse" } } }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "409": { "$ref": "#/components/responses/Conflict" }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "로그인",
+        "description": "UC-1 로그인. 사용자와 관리자가 동일하게 사용하는 기능이다. 인증 성공 시 Access Token과 Refresh Token을 발급한다.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LoginRequest" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "로그인 성공, 토큰 발급",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LoginResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "Access Token 재발급",
+        "description": "UC-1 로그인 연장 기능. 유효한 Refresh Token으로 새 Access Token을 재발급한다.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RefreshRequest" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "재발급 성공",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RefreshResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "tags": ["auth"],
+        "summary": "로그아웃",
+        "description": "UC-1 로그인의 역기능. 전달받은 Refresh Token을 폐기(revoke)하여 이후 재사용을 차단한다.",
+        "security": [],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LogoutRequest" } } }
+        },
+        "responses": {
+          "204": { "description": "로그아웃 성공 (본문 없음)" },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/me": {
+      "get": {
+        "tags": ["me"],
+        "summary": "내 정보/보유 포인트 조회",
+        "description": "UC-4 본인의 보유 포인트를 조회한다. 항상 토큰의 사용자 본인 정보만 반환한다.",
+        "responses": {
+          "200": {
+            "description": "조회 성공",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/MeResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    },
+    "/events": {
+      "get": {
+        "tags": ["events"],
+        "summary": "진행중/예정 이벤트 목록 조회",
+        "description": "UC-2 진행 중/예정 이벤트 목록을 조회한다. status가 `종료`인 이벤트는 이 목록에서 제외된다.",
+        "responses": {
+          "200": {
+            "description": "조회 성공",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Event" } }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      },
+      "post": {
+        "tags": ["events"],
+        "summary": "이벤트 등록 (관리자 전용)",
+        "description": "UC-9 이벤트를 등록한다. 관리자 전용. 이벤트명/기간/status는 필수, 이미지/경품·혜택 설명은 선택이며, 종료일시는 시작일시보다 이후여야 한다.",
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EventCreateRequest" } } }
+        },
+        "responses": {
+          "201": {
+            "description": "등록 성공",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Event" } } }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      }
+    },
+    "/admin/events": {
+      "get": {
+        "tags": ["events"],
+        "summary": "전체 이벤트 목록 조회 (관리자 전용)",
+        "description": "관리자 전용. UC-9~UC-11 관리 화면에서 사용하는 이벤트 목록으로, `예정`/`진행중`/`종료` 상태를 모두 포함한다.",
+        "responses": {
+          "200": {
+            "description": "조회 성공",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/Event" } }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" }
+        }
+      }
+    },
+    "/events/{id}": {
+      "get": {
+        "tags": ["events"],
+        "summary": "이벤트 상세 조회",
+        "description": "UC-3 이벤트 상세(이벤트명, 이미지, 기간, 경품/혜택, 상태)를 조회한다.",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer", "format": "int64" }, "description": "이벤트 ID" }
+        ],
+        "responses": {
+          "200": {
+            "description": "조회 성공",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Event" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      },
+      "put": {
+        "tags": ["events"],
+        "summary": "이벤트 정보 수정 (관리자 전용)",
+        "description": "UC-10 이벤트 정보를 수정한다. 관리자 전용. UC-9와 동일한 유효성 규칙(필수값, 종료일시 > 시작일시)이 적용된다.",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer", "format": "int64" }, "description": "이벤트 ID" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EventUpdateRequest" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "수정 성공",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Event" } } }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/events/{id}/status": {
+      "patch": {
+        "tags": ["events"],
+        "summary": "이벤트 상태 변경 (관리자 전용)",
+        "description": "UC-11 이벤트 상태(예정/진행중/종료)를 변경한다. 관리자 전용. 상태 전이는 예정→진행중→종료 순서만 허용하며, 역방향 전이(예: 진행중→예정)와 단계 건너뛰기(예: 예정→종료)는 409로 거부한다.",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer", "format": "int64" }, "description": "이벤트 ID" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/EventStatusUpdateRequest" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "상태 변경 성공",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Event" } } }
+          },
+          "400": { "$ref": "#/components/responses/BadRequest" },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": { "$ref": "#/components/responses/Conflict" }
+        }
+      }
+    },
+    "/events/{id}/applications": {
+      "post": {
+        "tags": ["applications"],
+        "summary": "응모 확정 (포인트 차감 + EventApplication 갱신)",
+        "description": "UC-7 응모를 확정하여 포인트를 차감하고 EventApplication을 갱신한다 (관련 규칙: 5.1, 5.2, 5.3, 5.4, 5.7, 5.8, 5.9). 요청 전 UC-5(최대 응모 가능 횟수 확인)와 UC-6(응모 횟수 선택 및 미리보기)를 통해 클라이언트가 참고용 계산을 미리 보여줄 수 있으나, 최종 검증은 항상 이 API가 수행한다.\n\n- 원자성(5.7): pointBalance 차감, PointTransaction 생성, EventApplication의 totalCount/totalPointsUsed 누적 갱신은 하나의 트랜잭션으로 처리되며 부분 실패가 없다.\n- 멱등성(5.8): idempotencyKey는 유일값 제약을 가진다. 동일 idempotencyKey로 재요청(중복 클릭, 네트워크 재시도 등)이 들어오면 포인트를 재차감하지 않고 이전 처리 결과를 그대로 반환한다.\n- 동시성(5.9): 동일 User-Event 조합에 대한 동시 요청은 DB row lock 등으로 직렬화되어, 순차 처리와 동일한 최종 결과를 보장하며 pointBalance는 어떤 경우에도 음수가 되지 않는다.\n\n실패 케이스: 이벤트가 진행중이 아니면(5.1) 409, 보유 포인트 부족이면(5.2) 409, 응모 횟수가 1 이상 정수가 아니면(5.3) 400으로 거부되며 두 경우 모두 포인트 차감이 발생하지 않는다.",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer", "format": "int64" }, "description": "응모 대상 이벤트 ID" }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApplyRequest" } } }
+        },
+        "responses": {
+          "200": {
+            "description": "응모 확정 성공(신규 처리 또는 동일 idempotencyKey에 대한 기존 결과 반환). 갱신된 pointBalance와 해당 이벤트의 누적 totalCount/totalPointsUsed를 포함한다.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApplyResponse" } } }
+          },
+          "400": {
+            "description": "응모 횟수가 1 이상 정수가 아님 (5.3)",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "404": { "$ref": "#/components/responses/NotFound" },
+          "409": {
+            "description": "이벤트가 진행중이 아님(5.1) 또는 보유 포인트 부족(5.2)으로 응모가 거부됨. 포인트 차감은 발생하지 않는다.",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          }
+        }
+      },
+      "get": {
+        "tags": ["applications"],
+        "summary": "이벤트별 응모 현황 조회 (관리자 전용)",
+        "description": "UC-12 이벤트별 전체 응모 횟수와 참여 사용자 수를 조회한다. 관리자 전용.",
+        "parameters": [
+          { "name": "id", "in": "path", "required": true, "schema": { "type": "integer", "format": "int64" }, "description": "이벤트 ID" }
+        ],
+        "responses": {
+          "200": {
+            "description": "조회 성공",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApplicationSummaryResponse" } } }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" },
+          "403": { "$ref": "#/components/responses/Forbidden" },
+          "404": { "$ref": "#/components/responses/NotFound" }
+        }
+      }
+    },
+    "/me/applications": {
+      "get": {
+        "tags": ["applications"],
+        "summary": "내 응모 내역 조회",
+        "description": "UC-8 본인이 신청한 이벤트 목록과 이벤트별 응모 횟수·사용 포인트·응모 일시를 조회한다. 이벤트 status가 `종료`인 경우에도 목록에 포함된다.",
+        "responses": {
+          "200": {
+            "description": "조회 성공",
+            "content": {
+              "application/json": {
+                "schema": { "type": "array", "items": { "$ref": "#/components/schemas/MyApplicationItem" } }
+              }
+            }
+          },
+          "401": { "$ref": "#/components/responses/Unauthorized" }
+        }
+      }
+    }
+  },
+  "security": [
+    { "bearerAuth": [] }
+  ]
+}

@@ -1,7 +1,7 @@
 # 프레시밀 포인트 이벤트 응모(freshmeal-point-event) 구조 설계 원칙
 
-버전: v1.1 (2026-08-13)
-기반 문서: `docs/2-domain-definition.md` v1.4, `docs/3-usecase.md`, `docs/4-PRD.md` v1.3, `docs/5-user-scenario.md` v1.0
+버전: v1.2 (2026-08-13)
+기반 문서: `docs/2-domain-definition.md` v1.5, `docs/3-usecase.md` v1.1, `docs/4-PRD.md` v1.4, `docs/5-user-scenario.md` v1.1
 
 ## 0. 이 문서의 목적
 
@@ -183,3 +183,4 @@ backend/
 |---|---|---|
 | v1.0 | 2026-08-13 | 초안 작성 (docs/2-domain-definition.md, docs/3-usecase.md, docs/4-PRD.md, docs/5-user-scenario.md 기반 최상위 원칙/레이어 원칙/네이밍/테스트/설정·보안/프론트·백엔드 디렉토리 구조) |
 | v1.1 | 2026-08-13 | docs 전체 정합성 검토 반영: 1장의 잘못된 절 참조("3장 참조" → "2.1 참조") 수정 |
+| v1.2 | 2026-08-13 | docs 전체 정합성 재검토 반영: 기반 문서 라벨을 도메인 정의서 v1.5, PRD v1.4, 사용자시나리오 v1.1로 정정 |

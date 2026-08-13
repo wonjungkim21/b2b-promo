@@ -1,17 +1,18 @@
 # 프레시밀 포인트 이벤트 응모(freshmeal-point-event) 개발 실행계획
 
-버전: v1.0 (2026-08-13)
+버전: v1.2 (2026-08-13)
 
 기반 문서:
 - `docs/2-domain-definition.md` v1.5 (도메인 정의서)
 - `docs/3-usecase.md` v1.1 (유스케이스)
-- `docs/4-PRD.md` v1.3 (PRD)
-- `docs/5-user-scenario.md` v1.0 (사용자 시나리오)
-- `docs/6-project-principle.md` v1.1 (구조 설계 원칙)
-- `docs/7-arch-diagram.md` v1.1 (아키텍처 다이어그램)
-- `docs/8-wireframe.md` v1.1 (와이어프레임)
-- `docs/9-erd.md` v1.0 (ERD)
-- `docs/10-schema.sql` v1.0 (PostgreSQL DDL)
+- `docs/4-PRD.md` v1.4 (PRD)
+- `docs/5-user-scenario.md` v1.1 (사용자 시나리오)
+- `docs/6-project-principle.md` v1.2 (구조 설계 원칙)
+- `docs/7-arch-diagram.md` v1.2 (아키텍처 다이어그램)
+- `docs/8-wireframe.md` v1.2 (와이어프레임)
+- `docs/9-erd.md` v1.1 (ERD)
+- `docs/10-schema.sql` (PostgreSQL DDL)
+- `docs/swagger.json` (OpenAPI 3.0.3 스펙)
 
 ## 1. 개요
 
@@ -46,6 +47,75 @@
 | FE-7 | 내 응모 내역 화면 | Must | FE-3, BE-9 |
 | FE-8 | 관리자 이벤트 목록/등록·수정/상태변경 화면 | Must | FE-2, BE-6 |
 | FE-9 | 관리자 이벤트별 응모 현황 화면 | Should | FE-8, BE-9 |
+
+### 2.1 Task 의존 관계
+
+위 표의 선행 관계를 그대로 도식화한 것이다. 화살표는 `선행 Task → 후속 Task` 방향이다.
+
+```mermaid
+flowchart LR
+    subgraph DBG["데이터베이스"]
+        DB1["DB-1<br/>스키마 적용"]
+        DB2["DB-2<br/>시드 데이터"]
+    end
+
+    subgraph BEG["백엔드"]
+        BE1["BE-1<br/>부트스트랩"]
+        BE2["BE-2<br/>인증 API"]
+        BE3["BE-3<br/>인증·권한 미들웨어"]
+        BE4["BE-4<br/>내 정보/포인트 조회"]
+        BE5["BE-5<br/>이벤트 목록·상세"]
+        BE6["BE-6<br/>관리자 이벤트 관리"]
+        BE7["BE-7 ★<br/>응모 확정 트랜잭션"]
+        BE8["BE-8<br/>응모 확정 테스트"]
+        BE9["BE-9<br/>응모 내역 조회"]
+    end
+
+    subgraph FEG["프론트엔드"]
+        FE1["FE-1<br/>부트스트랩"]
+        FE2["FE-2<br/>회원가입·로그인"]
+        FE3["FE-3<br/>공용 컴포넌트·레이아웃"]
+        FE4["FE-4<br/>이벤트 목록"]
+        FE5["FE-5<br/>이벤트 상세"]
+        FE6["FE-6<br/>응모 확정 연동"]
+        FE7["FE-7<br/>내 응모 내역"]
+        FE8["FE-8<br/>관리자 이벤트 화면"]
+        FE9["FE-9<br/>관리자 응모 현황"]
+    end
+
+    DB1 --> DB2
+    DB1 --> BE1
+    BE1 --> BE2
+    BE2 --> BE3
+    BE3 --> BE4
+    BE3 --> BE5
+    BE3 --> BE6
+    BE3 --> BE7
+    BE5 --> BE7
+    BE7 --> BE8
+    DB2 --> BE8
+    BE7 --> BE9
+
+    FE1 --> FE2
+    FE1 --> FE3
+    BE2 --> FE2
+    FE3 --> FE4
+    BE5 --> FE4
+    FE3 --> FE5
+    BE5 --> FE5
+    FE5 --> FE6
+    BE7 --> FE6
+    FE3 --> FE7
+    BE9 --> FE7
+    FE2 --> FE8
+    BE6 --> FE8
+    FE8 --> FE9
+    BE9 --> FE9
+```
+
+- **시작 가능 Task(선행 없음)**: DB-1, FE-1 — 이 둘은 착수 시점에 병렬로 시작할 수 있다.
+- **최장 의존 사슬(8단계)**: DB-1 → BE-1 → BE-2 → BE-3 → BE-5 → BE-7 → BE-9 → FE-7/FE-9. 이 사슬 위의 Task가 지연되면 전체 일정이 밀리므로, 6장 일정 배분에서 BE-7을 Day 2로 앞당겨 배치했다.
+- **FE-1, FE-3**은 백엔드에 의존하지 않으므로 백엔드 API 대기 중 선행 작업이 가능하다.
 
 ---
 
@@ -254,7 +324,7 @@
 **수행 작업**
 - `applications` 4파일에 조회 기능 추가.
 - `GET /api/me/applications`(UC-8): 본인 응모 이벤트별 이벤트명/상태/totalCount/totalPointsUsed/lastAppliedAt. `종료` 이벤트도 포함.
-- `GET /api/events/:id/applications/summary`(UC-12, `requireAdmin`): `SUM(total_count)` 전체 응모 횟수, `COUNT(*)` 참여 사용자 수.
+- `GET /api/events/:id/applications`(UC-12, `requireAdmin`): `SUM(total_count)` 전체 응모 횟수, `COUNT(*)` 참여 사용자 수. 동일 경로의 `POST`(BE-7, 응모 확정)와 메서드로만 구분되며, 별도 `/summary` 하위 경로는 두지 않는다 (`docs/swagger.json`, `6-project-principle.md` 3장 API 명명 예시와 일치).
 
 **선행 Task**: BE-7
 
@@ -437,7 +507,7 @@
 | Day 3 | BE-6, FE-3, FE-4, FE-5, FE-6, FE-7, FE-8, (여유 시 FE-9) | 사용자 전체 플로우(목록→상세→응모→내역) 및 관리자 화면 완성 |
 
 - BE-7/BE-8을 Day 2에 배치해 가장 위험한 작업을 일찍 끝내고, Day 3에 UI 시간을 확보한다.
-- Should 항목(UC-12: BE-9의 summary API, FE-9)은 일정 압박 시 마지막에 조정한다.
+- Should 항목(UC-12: BE-9의 응모 현황 조회 API, FE-9)은 일정 압박 시 마지막에 조정한다.
 - PRD 9장에 따라 QA/디자인 별도 리소스는 없으며, BE-8 외 검증은 수동 확인으로 대체한다(원칙 4장).
 
 ## 7. 변경 이력
@@ -445,3 +515,5 @@
 | 버전 | 일자 | 변경 내용 |
 |---|---|---|
 | v1.0 | 2026-08-13 | 초안 작성 (docs/2~10 기반 DB 2건 / BE 9건 / FE 9건 Task 분해, 의존성·완료조건·3일 일정 배분 포함) |
+| v1.1 | 2026-08-13 | 2.1절에 Task 의존 관계 flowchart(mermaid) 추가, 시작 가능 Task·최장 의존 사슬 명시 |
+| v1.2 | 2026-08-13 | docs 전체 정합성 재검토 반영: BE-9의 UC-12 엔드포인트 경로를 `docs/swagger.json` 실제 설계(`GET /api/events/:id/applications`)에 맞춰 수정 (기존 `/summary` 하위 경로 표기 제거) |

@@ -1,6 +1,6 @@
 -- freshmeal-point-event DDL (PostgreSQL 17)
 -- 버전: v1.0 (2026-08-13)
--- 기반 문서: docs/9-erd.md v1.0 (docs/2-domain-definition.md v1.4, docs/4-PRD.md v1.2)
+-- 기반 문서: docs/9-erd.md v1.1 (docs/2-domain-definition.md v1.5, docs/4-PRD.md v1.4)
 -- ORM 미사용, pg 드라이버로 직접 실행하는 것을 전제로 작성 (docs/6-project-principle.md)
 
 BEGIN;
