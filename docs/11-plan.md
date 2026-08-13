@@ -1,6 +1,6 @@
 # 프레시밀 포인트 이벤트 응모(freshmeal-point-event) 개발 실행계획
 
-버전: v1.2 (2026-08-13)
+버전: v1.4 (2026-08-13)
 
 기반 문서:
 - `docs/2-domain-definition.md` v1.5 (도메인 정의서)
@@ -133,11 +133,11 @@ flowchart LR
 **관련 문서/규칙**: 9-erd.md, 10-schema.sql, 도메인 3.1~3.5 / 5.2 / 5.8, 원칙 5장(환경변수)
 
 **완료 조건**
-- [ ] 5개 테이블이 모두 생성되어 있다
-- [ ] `ck_users_point_balance_non_negative`, `ck_events_period`, `ck_events_status` 제약이 존재한다
-- [ ] `uq_event_applications_user_event`, `uq_point_transactions_idempotency_key` 유니크 제약이 존재한다
-- [ ] 제약 위반 INSERT(음수 잔액, end_at ≤ start_at, 중복 멱등키)가 각각 실패하는 것을 확인했다
-- [ ] `backend/.env.example`에 DB 접속 환경변수 키가 정의되어 있다
+- [x] 5개 테이블이 모두 생성되어 있다
+- [x] `ck_users_point_balance_non_negative`, `ck_events_period`, `ck_events_status` 제약이 존재한다
+- [x] `uq_event_applications_user_event`, `uq_point_transactions_idempotency_key` 유니크 제약이 존재한다
+- [x] 제약 위반 INSERT(음수 잔액, end_at ≤ start_at, 중복 멱등키)가 각각 실패하는 것을 확인했다
+- [x] `backend/.env.example`에 DB 접속 환경변수 키가 정의되어 있다
 
 ### DB-2. 시드 데이터 구성 [Must]
 
@@ -151,10 +151,10 @@ flowchart LR
 **관련 문서/규칙**: 도메인 3.1(pointBalance 초기값은 시딩 가정), 6장 제외 범위(포인트 충전 없음), 시나리오 3.6-2
 
 **완료 조건**
-- [ ] admin 1명, user 2명 이상이 생성되어 있고 비밀번호가 해시로 저장되어 있다
-- [ ] 포인트 1,000 미만 사용자와 여러 회 응모 가능한 사용자가 각각 존재한다
-- [ ] `예정`/`진행중`/`종료` 상태 이벤트가 각각 1건 이상 존재한다
-- [ ] 시드 스크립트를 반복 실행해도 개발을 진행할 수 있다(초기화 후 재실행 절차가 문서/스크립트에 있다)
+- [x] admin 1명, user 2명 이상이 생성되어 있고 비밀번호가 해시로 저장되어 있다
+- [x] 포인트 1,000 미만 사용자와 여러 회 응모 가능한 사용자가 각각 존재한다
+- [x] `예정`/`진행중`/`종료` 상태 이벤트가 각각 1건 이상 존재한다
+- [x] 시드 스크립트를 반복 실행해도 개발을 진행할 수 있다(초기화 후 재실행 절차가 문서/스크립트에 있다)
 
 ---
 
@@ -517,3 +517,5 @@ flowchart LR
 | v1.0 | 2026-08-13 | 초안 작성 (docs/2~10 기반 DB 2건 / BE 9건 / FE 9건 Task 분해, 의존성·완료조건·3일 일정 배분 포함) |
 | v1.1 | 2026-08-13 | 2.1절에 Task 의존 관계 flowchart(mermaid) 추가, 시작 가능 Task·최장 의존 사슬 명시 |
 | v1.2 | 2026-08-13 | docs 전체 정합성 재검토 반영: BE-9의 UC-12 엔드포인트 경로를 `docs/swagger.json` 실제 설계(`GET /api/events/:id/applications`)에 맞춰 수정 (기존 `/summary` 하위 경로 표기 제거) |
+| v1.3 | 2026-08-13 | DB-1 완료 처리: postgresql-mcp로 5개 테이블·제약조건 생성 및 검증(음수 잔액/기간 역전/중복 멱등키 INSERT 거부 확인), `backend/.env.example` 추가 후 완료 조건 체크박스 5개 모두 체크 |
+| v1.4 | 2026-08-13 | DB-2 완료 처리: `backend/seed.sql` 작성(pgcrypto bcrypt 해시, admin 1명·user 3명(800/2,000/5,500P)·이벤트 4건(예정1·진행중2·종료1)), postgresql-mcp로 2회 반복 실행해 재실행 안전성까지 검증 후 완료 조건 체크박스 4개 모두 체크 |

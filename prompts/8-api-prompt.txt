@@ -1,0 +1,2 @@
+적절한 서브에이전트를 사용해 @docs 디렉토리 내의 문서를 분석하여 swagger spec을 작성하고 docs\swagger.json 파일에 저장해줘.
+    

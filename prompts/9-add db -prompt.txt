@@ -1,0 +1,2 @@
+postgresql-mcp 도구를 사용해 @docs/9-erd.md 파일을 분석하여 데이터베이스를
+  생성해줘
