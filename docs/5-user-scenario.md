@@ -1,7 +1,7 @@
 # 프레시밀 포인트 이벤트 응모(freshmeal-point-event) 사용자 시나리오
 
 버전: v1.0 (2026-08-13)
-기반 문서: `docs/2-PRD.md` v1.2, `docs/2-domain-definition.md` v1.4
+기반 문서: `docs/4-PRD.md` v1.2, `docs/2-domain-definition.md` v1.4
 
 ## 1. 개요
 
