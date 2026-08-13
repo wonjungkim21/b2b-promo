@@ -1,0 +1,124 @@
+# 프레시밀 포인트 이벤트 응모(freshmeal-point-event) 기술 아키텍처 다이어그램
+
+버전: v1.1 (2026-08-13)
+기반 문서: `docs/4-PRD.md` v1.2, `docs/6-project-principle.md` v1.0
+
+## 1. 전체 시스템 구성도
+
+사용자/관리자가 브라우저로 React SPA에 접속하고, SPA가 Express API 서버를 거쳐 PostgreSQL에 접근하는 3일/1인 MVP의 실제 구성요소만 표현한 전체 구조다.
+
+```mermaid
+flowchart LR
+    subgraph Client["클라이언트 (브라우저, 반응형 웹)"]
+        User["사용자"]
+        Admin["관리자"]
+    end
+
+    subgraph Frontend["프론트엔드: React 19 SPA"]
+        UI["Pages/Components"]
+        Query["TanStack Query 훅"]
+        Store["Zustand (accessToken 등 클라이언트 상태)"]
+        ApiClient["API 클라이언트 (fetch/axios)"]
+    end
+
+    subgraph Backend["백엔드: Node.js + Express"]
+        Router["Router → Controller"]
+        Service["Service (도메인 규칙 + JWT 발급/검증)"]
+        Queries["Query 함수 (pg)"]
+    end
+
+    DB[("PostgreSQL 17")]
+
+    User --> UI
+    Admin --> UI
+    UI --> Query
+    UI --> Store
+    Query --> ApiClient
+    ApiClient -- "HTTPS + Access Token" --> Router
+    Router --> Service
+    Service --> Queries
+    Queries --> DB
+```
+
+## 2. 프론트엔드 컴포넌트 구조
+
+`6-project-principle.md` 6장 디렉토리 구조를 바탕으로, 화면(Pages)이 재사용 컴포넌트·상태·API 훅을 어떻게 조합하는지 표현한다.
+
+```mermaid
+flowchart TB
+    subgraph Pages["Pages (화면)"]
+        Signup["SignupPage"]
+        Login["LoginPage"]
+        EventList["EventListPage"]
+        EventDetail["EventDetailPage"]
+        MyApps["MyApplicationsPage"]
+        AdminEvent["AdminEventListPage / AdminEventFormPage"]
+        AdminStats["AdminEventStatsPage"]
+    end
+
+    subgraph Components["Components (공용 UI)"]
+        PointBadge["PointBalanceBadge"]
+        EventCard["EventCard"]
+        StatusBadge["EventStatusBadge"]
+    end
+
+    subgraph Features["Features (도메인별 API 훅)"]
+        AuthHooks["auth: useLogin"]
+        EventHooks["events: useEventList / useEventDetail / useApplyEvent"]
+        AppHooks["applications: useMyApplications"]
+    end
+
+    Store["Zustand authStore (accessToken 등)"]
+    Utils["utils/pointCalc (응모 미리보기 계산)"]
+
+    Signup --> AuthHooks
+    Login --> AuthHooks
+    Login --> Store
+
+    EventList --> EventHooks
+    EventList --> EventCard
+    EventList --> PointBadge
+
+    EventDetail --> EventHooks
+    EventDetail --> PointBadge
+    EventDetail --> StatusBadge
+    EventDetail --> Utils
+
+    MyApps --> AppHooks
+
+    AdminEvent --> EventHooks
+    AdminStats --> EventHooks
+
+    AuthHooks --> Store
+```
+
+## 3. JWT 인증 요청 흐름
+
+로그인 시 Access/Refresh Token을 발급받고, 이후 API 요청에는 Access Token을 사용하며 만료 시 Refresh Token으로 재발급받는 흐름을 간단히 표현한다.
+
+```mermaid
+sequenceDiagram
+    participant C as 클라이언트(SPA)
+    participant B as 백엔드(Express)
+    participant D as PostgreSQL
+
+    C->>B: 로그인 요청 (ID/PW)
+    B->>D: 사용자 조회/검증
+    B-->>C: Access Token + Refresh Token 발급
+
+    C->>B: API 요청 (Access Token)
+    B-->>C: 응답 (정상)
+
+    C->>B: API 요청 (Access Token 만료)
+    B-->>C: 401 응답
+    C->>B: 토큰 재발급 요청 (Refresh Token)
+    B->>D: Refresh Token 유효성 확인
+    B-->>C: 새 Access Token 발급
+```
+
+## 4. 변경 이력
+
+| 버전 | 일자 | 변경 내용 |
+|---|---|---|
+| v1.0 | 2026-08-13 | 초안 작성 (전체 시스템 구성도, JWT 인증 요청 흐름) |
+| v1.1 | 2026-08-13 | 프론트엔드 컴포넌트 구조 다이어그램(2장) 추가, 이후 절 번호 조정 |
