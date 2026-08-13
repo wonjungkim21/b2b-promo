@@ -1,6 +1,6 @@
 # 프레시밀 포인트 이벤트 응모(freshmeal-point-event) 개발 실행계획
 
-버전: v1.4 (2026-08-13)
+버전: v1.5 (2026-08-13)
 
 기반 문서:
 - `docs/2-domain-definition.md` v1.5 (도메인 정의서)
@@ -175,11 +175,11 @@ flowchart LR
 **관련 문서/규칙**: 원칙 2.2/2.3/5장, PRD 7장(기술스택), 7-arch-diagram.md 1장
 
 **완료 조건**
-- [ ] `npm start`로 서버가 기동되고 헬스 확인용 요청이 200을 반환한다
-- [ ] 필수 환경변수 누락 시 서버가 기동 단계에서 에러로 중단된다
-- [ ] 도메인 에러를 throw하면 공통 에러 핸들러가 4xx + 메시지로, 그 외 에러는 500 + 서버 로그 스택으로 변환한다
-- [ ] CORS 허용 origin이 `.env` 값으로만 지정되며 `*`를 사용하지 않는다
-- [ ] `constants.js` 외 어떤 파일에도 `1000` 포인트 값이 하드코딩되어 있지 않다
+- [x] `npm start`로 서버가 기동되고 헬스 확인용 요청이 200을 반환한다
+- [x] 필수 환경변수 누락 시 서버가 기동 단계에서 에러로 중단된다
+- [x] 도메인 에러를 throw하면 공통 에러 핸들러가 4xx + 메시지로, 그 외 에러는 500 + 서버 로그 스택으로 변환한다
+- [x] CORS 허용 origin이 `.env` 값으로만 지정되며 `*`를 사용하지 않는다
+- [x] `constants.js` 외 어떤 파일에도 `1000` 포인트 값이 하드코딩되어 있지 않다
 
 ### BE-2. 인증 API — 회원가입/로그인/토큰 재발급/로그아웃 [Must]
 
@@ -519,3 +519,4 @@ flowchart LR
 | v1.2 | 2026-08-13 | docs 전체 정합성 재검토 반영: BE-9의 UC-12 엔드포인트 경로를 `docs/swagger.json` 실제 설계(`GET /api/events/:id/applications`)에 맞춰 수정 (기존 `/summary` 하위 경로 표기 제거) |
 | v1.3 | 2026-08-13 | DB-1 완료 처리: postgresql-mcp로 5개 테이블·제약조건 생성 및 검증(음수 잔액/기간 역전/중복 멱등키 INSERT 거부 확인), `backend/.env.example` 추가 후 완료 조건 체크박스 5개 모두 체크 |
 | v1.4 | 2026-08-13 | DB-2 완료 처리: `backend/seed.sql` 작성(pgcrypto bcrypt 해시, admin 1명·user 3명(800/2,000/5,500P)·이벤트 4건(예정1·진행중2·종료1)), postgresql-mcp로 2회 반복 실행해 재실행 안전성까지 검증 후 완료 조건 체크박스 4개 모두 체크 |
+| v1.5 | 2026-08-13 | BE-1 완료 처리: `backend/src/{config,db,middlewares,domain}` 및 `app.js`/`index.js`/`package.json` 구현, `backend/src/tests/be1-bootstrap.test.js`(15개 테스트, 라인 커버리지 96.55%) 작성·통과 확인 후 완료 조건 체크박스 5개 모두 체크 |
