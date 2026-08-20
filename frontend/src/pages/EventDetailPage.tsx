@@ -1,0 +1,134 @@
+import { useRef, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import PointBalanceBadge from '../components/PointBalanceBadge';
+import EventStatusBadge from '../components/EventStatusBadge';
+import { useEventDetail } from '../features/events/useEventDetail';
+import { useApplyEvent } from '../features/events/useApplyEvent';
+import { useMe } from '../features/me/useMe';
+import { getMaxApplyCount, getPlannedPoints, getRemainingPoints } from '../utils/pointCalc';
+
+function parseCount(input: string): number | null {
+  if (!/^\d+$/.test(input)) return null;
+  const n = Number(input);
+  if (n < 1) return null;
+  return n;
+}
+
+function EventDetailPage() {
+  const params = useParams();
+  const id = Number(params.id);
+  const { data: event, isLoading: eventLoading, isError: eventError } = useEventDetail(id);
+  const { data: me } = useMe();
+  const [countInput, setCountInput] = useState('1');
+  const idempotencyKeyRef = useRef(crypto.randomUUID());
+  const applyMutation = useApplyEvent(id);
+
+  if (eventLoading) return <div>로딩중...</div>;
+  if (eventError || !event) return <div>이벤트 정보를 불러오지 못했습니다.</div>;
+
+  const pointBalance = me?.pointBalance ?? 0;
+  const maxApplyCount = getMaxApplyCount(pointBalance);
+  const isOngoing = event.status === '진행중';
+  const isApplicable = isOngoing && maxApplyCount > 0;
+
+  const parsedCount = parseCount(countInput);
+  const hasValidCount = parsedCount !== null;
+
+  const plannedPoints = hasValidCount ? getPlannedPoints(parsedCount) : null;
+  const remainingPoints = hasValidCount ? getRemainingPoints(pointBalance, parsedCount) : null;
+
+  function handleDecrement() {
+    const current = parseCount(countInput) ?? 1;
+    setCountInput(String(Math.max(1, current - 1)));
+  }
+
+  function handleIncrement() {
+    const current = parseCount(countInput) ?? 0;
+    setCountInput(String(current + 1));
+  }
+
+  // ponytail: count를 바꿔서 같은 키로 재시도하면 서버가 이전 성공 결과를 그대로 반환할 수 있는
+  // 멱등키 설계 자체의 근본적 트레이드오프 — 필요시 count 변경 감지해 키 재생성 고려
+  function handleApply() {
+    if (parsedCount === null) return;
+    applyMutation.mutate(
+      { count: parsedCount, idempotencyKey: idempotencyKeyRef.current },
+      {
+        onSuccess: () => {
+          idempotencyKeyRef.current = crypto.randomUUID();
+        },
+      },
+    );
+  }
+
+  return (
+    <div className="page-container">
+      <PointBalanceBadge />
+
+      <div className="event-detail">
+        <div className="event-detail-info">
+          {event.imageUrl && <img src={event.imageUrl} alt={event.title} />}
+          <div>
+            {event.title} <EventStatusBadge status={event.status} />
+          </div>
+          <div>
+            기간: {event.startAt} ~ {event.endAt}
+          </div>
+          {event.prizeDescription && <div>경품/혜택: {event.prizeDescription}</div>}
+        </div>
+
+        <div className="event-detail-apply">
+          <div>최대 응모 가능 횟수: {maxApplyCount}회</div>
+
+          {!isApplicable && (
+            <div>
+              {maxApplyCount === 0
+                ? '⚠ 포인트가 부족하여 응모할 수 없습니다.'
+                : '진행중인 이벤트만 응모할 수 있습니다.'}
+            </div>
+          )}
+
+          <div>
+            <button type="button" onClick={handleDecrement} disabled={!isApplicable}>
+              -
+            </button>
+            <input
+              value={countInput}
+              onChange={(e) => setCountInput(e.target.value)}
+              disabled={!isApplicable}
+            />
+            <button type="button" onClick={handleIncrement} disabled={!isApplicable}>
+              +
+            </button>
+          </div>
+
+          {isApplicable && !hasValidCount && (
+            <div>응모 횟수는 1 이상의 정수여야 합니다.</div>
+          )}
+
+          <div>사용 예정 포인트: {plannedPoints !== null ? `${plannedPoints.toLocaleString()} P` : '-'}</div>
+          <div>
+            응모 후 잔여 포인트: {remainingPoints !== null ? `${remainingPoints.toLocaleString()} P` : '-'}
+          </div>
+
+          <button
+            type="button"
+            onClick={handleApply}
+            disabled={!isApplicable || !hasValidCount || applyMutation.isPending}
+          >
+            응모 확정
+          </button>
+          {applyMutation.isError && <div>{applyMutation.error.message}</div>}
+          {applyMutation.isSuccess && applyMutation.data && (
+            <div>
+              응모 완료! 누적 응모 횟수: {applyMutation.data.totalCount}회, 누적 사용 포인트:{' '}
+              {applyMutation.data.totalPointsUsed.toLocaleString()} P
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default EventDetailPage;

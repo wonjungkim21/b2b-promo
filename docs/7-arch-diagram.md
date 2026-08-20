@@ -1,7 +1,7 @@
 # 프레시밀 포인트 이벤트 응모(freshmeal-point-event) 기술 아키텍처 다이어그램
 
-버전: v1.2 (2026-08-13)
-기반 문서: `docs/4-PRD.md` v1.4, `docs/6-project-principle.md` v1.2
+버전: v1.3 (2026-08-20)
+기반 문서: `docs/4-PRD.md` v1.4, `docs/6-project-principle.md` v1.3
 
 ## 1. 전체 시스템 구성도
 
@@ -123,3 +123,4 @@ sequenceDiagram
 | v1.0 | 2026-08-13 | 초안 작성 (전체 시스템 구성도, JWT 인증 요청 흐름) |
 | v1.1 | 2026-08-13 | 프론트엔드 컴포넌트 구조 다이어그램(2장) 추가, 이후 절 번호 조정 |
 | v1.2 | 2026-08-13 | docs 전체 정합성 재검토 반영: 기반 문서 라벨을 PRD v1.4, 구조 설계 원칙 v1.2로 정정 |
+| v1.3 | 2026-08-20 | BE-1~BE-9 실제 구현 반영 정합성 재검토: 전체 시스템 구성도(1장)는 Router→Controller→Service→Query 흐름을 추상적으로 표현해 실제 구현(admin-events.router.js 분리, applications 컨트롤러의 상위 도메인 router 마운트 등 세부 라우팅 방식)과 여전히 일치함을 확인, 기반 문서 라벨만 구조 설계 원칙 v1.3으로 정정 |

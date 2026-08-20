@@ -1,13 +1,13 @@
 # 프레시밀 포인트 이벤트 응모(freshmeal-point-event) 개발 실행계획
 
-버전: v1.13 (2026-08-20)
+버전: v1.23 (2026-08-20)
 
 기반 문서:
 - `docs/2-domain-definition.md` v1.5 (도메인 정의서)
 - `docs/3-usecase.md` v1.1 (유스케이스)
 - `docs/4-PRD.md` v1.4 (PRD)
 - `docs/5-user-scenario.md` v1.1 (사용자 시나리오)
-- `docs/6-project-principle.md` v1.2 (구조 설계 원칙)
+- `docs/6-project-principle.md` v1.3 (구조 설계 원칙)
 - `docs/7-arch-diagram.md` v1.2 (아키텍처 다이어그램)
 - `docs/8-wireframe.md` v1.2 (와이어프레임)
 - `docs/9-erd.md` v1.1 (ERD)
@@ -353,10 +353,10 @@ flowchart LR
 **관련 문서/규칙**: PRD 7장, 원칙 2.1 / 6장, 7-arch-diagram.md 2~3장
 
 **완료 조건**
-- [ ] `npm run dev`로 앱이 뜨고 라우팅이 동작한다
-- [ ] apiClient가 authStore의 accessToken을 자동으로 Authorization 헤더에 실어 보낸다
-- [ ] 401 응답 시 refresh 재발급을 1회 시도하고 실패하면 로그인 화면으로 보낸다
-- [ ] Zustand store에 서버 데이터(이벤트/포인트/응모내역)가 저장되어 있지 않다
+- [x] `npm run dev`로 앱이 뜨고 라우팅이 동작한다
+- [x] apiClient가 authStore의 accessToken을 자동으로 Authorization 헤더에 실어 보낸다
+- [x] 401 응답 시 refresh 재발급을 1회 시도하고 실패하면 로그인 화면으로 보낸다
+- [x] Zustand store에 서버 데이터(이벤트/포인트/응모내역)가 저장되어 있지 않다
 
 ### FE-2. 회원가입·로그인 화면 및 라우트 가드 [Must]
 
@@ -371,11 +371,11 @@ flowchart LR
 **관련 문서/규칙**: UC-0, UC-1, 시나리오 3.1-1/3.1-2/3.2-1/3.2-2, 와이어프레임 2.1/2.2
 
 **완료 조건**
-- [ ] 가입 성공 시 로그인 화면으로 이동한다
-- [ ] loginId 중복 시 오류 메시지 영역에 안내가 표시되고 화면이 전환되지 않는다
-- [ ] 로그인 실패 시 오류 메시지만 표시되고 토큰이 저장되지 않는다
-- [ ] role=user는 사용자 이벤트 목록, role=admin은 관리자 이벤트 목록으로 이동한다
-- [ ] 비로그인 상태로 보호된 경로 접근 시 로그인 화면으로 리다이렉트된다
+- [x] 가입 성공 시 로그인 화면으로 이동한다
+- [x] loginId 중복 시 오류 메시지 영역에 안내가 표시되고 화면이 전환되지 않는다
+- [x] 로그인 실패 시 오류 메시지만 표시되고 토큰이 저장되지 않는다
+- [x] role=user는 사용자 이벤트 목록, role=admin은 관리자 이벤트 목록으로 이동한다
+- [x] 비로그인 상태로 보호된 경로 접근 시 로그인 화면으로 리다이렉트된다
 
 ### FE-3. 공용 컴포넌트 및 반응형 레이아웃 기반 [Must]
 
@@ -389,10 +389,10 @@ flowchart LR
 **관련 문서/규칙**: UC-4, UC-5, UC-6, 와이어프레임 1장(반응형 원칙)/2.3, 원칙 2.1(미리보기는 참고용, 서버 재검증)
 
 **완료 조건**
-- [ ] PointBalanceBadge가 사용자 화면 공통 영역에 보유 포인트를 표시한다
-- [ ] EventStatusBadge가 `예정`/`진행중`/`종료` 3종을 구분 표시한다
-- [ ] 767px 이하와 768px 이상에서 레이아웃이 각각 와이어프레임대로 전환된다
-- [ ] `pointCalc.ts`가 잔액 0/999/1,000/5,500에 대해 각각 0/0/1/5회를 반환한다
+- [x] PointBalanceBadge가 사용자 화면 공통 영역에 보유 포인트를 표시한다
+- [x] EventStatusBadge가 `예정`/`진행중`/`종료` 3종을 구분 표시한다
+- [x] 767px 이하와 768px 이상에서 레이아웃이 각각 와이어프레임대로 전환된다
+- [x] `pointCalc.ts`가 잔액 0/999/1,000/5,500에 대해 각각 0/0/1/5회를 반환한다
 
 ### FE-4. 이벤트 목록 화면 [Must]
 
@@ -405,10 +405,10 @@ flowchart LR
 **관련 문서/규칙**: UC-2, UC-4, 시나리오 3.3-1, 와이어프레임 2.3
 
 **완료 조건**
-- [ ] `진행중`/`예정` 이벤트만 카드로 노출되고 `종료`는 보이지 않는다
-- [ ] 카드에 이벤트명/상태 배지/기간이 표시된다
-- [ ] 카드 클릭 시 이벤트 상세로 이동한다
-- [ ] 데스크탑에서 다열 그리드로 전환되고 콘텐츠 최대 폭이 제한된다
+- [x] `진행중`/`예정` 이벤트만 카드로 노출되고 `종료`는 보이지 않는다
+- [x] 카드에 이벤트명/상태 배지/기간이 표시된다
+- [x] 카드 클릭 시 이벤트 상세로 이동한다
+- [x] 데스크탑에서 다열 그리드로 전환되고 콘텐츠 최대 폭이 제한된다
 
 ### FE-5. 이벤트 상세 화면 (상태·최대횟수·미리보기) [Must]
 
@@ -422,12 +422,12 @@ flowchart LR
 **관련 문서/규칙**: UC-3/5/6, 시나리오 3.4-1/3.6-1/3.6-2/3.7-1/3.7-2, 와이어프레임 2.4/2.5
 
 **완료 조건**
-- [ ] 이미지·경품설명이 없는 이벤트도 오류 없이 렌더링된다
-- [ ] 최대 응모 가능 횟수가 `floor(pointBalance/1000)`으로 표시된다
-- [ ] 횟수 변경 시 사용 예정 포인트와 예상 잔여 포인트가 즉시 갱신된다
-- [ ] 0/음수/소수/비숫자 입력 시 유효성 안내가 뜨고 미리보기 값이 계산되지 않는다
-- [ ] 포인트 1,000 미만이면 최대 횟수 0회 + 안내 문구 + 입력/확정 버튼 비활성화 상태가 된다
-- [ ] 데스크탑에서 정보 영역/응모 영역이 좌우 2단으로 배치된다
+- [x] 이미지·경품설명이 없는 이벤트도 오류 없이 렌더링된다
+- [x] 최대 응모 가능 횟수가 `floor(pointBalance/1000)`으로 표시된다
+- [x] 횟수 변경 시 사용 예정 포인트와 예상 잔여 포인트가 즉시 갱신된다
+- [x] 0/음수/소수/비숫자 입력 시 유효성 안내가 뜨고 미리보기 값이 계산되지 않는다
+- [x] 포인트 1,000 미만이면 최대 횟수 0회 + 안내 문구 + 입력/확정 버튼 비활성화 상태가 된다
+- [x] 데스크탑에서 정보 영역/응모 영역이 좌우 2단으로 배치된다
 
 ### FE-6. 응모 확정 기능 연동 [Must]
 
@@ -440,11 +440,11 @@ flowchart LR
 **관련 문서/규칙**: UC-7, 도메인 5.1/5.2/5.3/5.8, 시나리오 3.8-1~3.8-5, 원칙 2.1(서버 응답 신뢰)
 
 **완료 조건**
-- [ ] 응모 성공 시 갱신된 보유 포인트와 누적 응모 횟수가 화면에 반영된다
-- [ ] 하나의 응모 시도에는 하나의 멱등키가 사용되고, 재시도 시 동일 키가 유지된다
-- [ ] 요청 처리 중 확정 버튼이 비활성화되어 중복 전송되지 않는다
-- [ ] 포인트 부족/이벤트 종료 오류 응답이 각각 구분된 안내 메시지로 표시된다
-- [ ] 실패 시 클라이언트가 임의로 포인트를 차감 표시하지 않는다(서버 값만 신뢰)
+- [x] 응모 성공 시 갱신된 보유 포인트와 누적 응모 횟수가 화면에 반영된다
+- [x] 하나의 응모 시도에는 하나의 멱등키가 사용되고, 재시도 시 동일 키가 유지된다
+- [x] 요청 처리 중 확정 버튼이 비활성화되어 중복 전송되지 않는다
+- [x] 포인트 부족/이벤트 종료 오류 응답이 각각 구분된 안내 메시지로 표시된다
+- [x] 실패 시 클라이언트가 임의로 포인트를 차감 표시하지 않는다(서버 값만 신뢰)
 
 ### FE-7. 내 응모 내역 화면 [Must]
 
@@ -457,10 +457,10 @@ flowchart LR
 **관련 문서/규칙**: UC-8, 시나리오 3.9-1, 와이어프레임 2.6
 
 **완료 조건**
-- [ ] 본인이 응모한 이벤트만 표시된다
-- [ ] `종료` 상태 이벤트도 목록에 포함된다
-- [ ] 각 카드에 totalCount/totalPointsUsed/lastAppliedAt이 표시된다
-- [ ] 응모 내역이 없을 때 빈 상태 안내가 표시된다
+- [x] 본인이 응모한 이벤트만 표시된다
+- [x] `종료` 상태 이벤트도 목록에 포함된다
+- [x] 각 카드에 totalCount/totalPointsUsed/lastAppliedAt이 표시된다
+- [x] 응모 내역이 없을 때 빈 상태 안내가 표시된다
 
 ### FE-8. 관리자 이벤트 목록/등록·수정/상태변경 화면 [Must]
 
@@ -474,12 +474,12 @@ flowchart LR
 **관련 문서/규칙**: UC-9/10/11, 시나리오 4.1-1/4.1-2/4.2-1/4.2-2/4.3-1~4.3-4, 와이어프레임 3.1/3.2
 
 **완료 조건**
-- [ ] 관리자 목록에 `예정`/`진행중`/`종료` 전체 이벤트가 표시된다
-- [ ] 등록 후 목록에 새 이벤트가 나타난다
-- [ ] 수정 화면에 기존 값이 채워져 열리고 저장 시 반영된다
-- [ ] 필수값 누락/종료일시 ≤ 시작일시 시 저장이 막히고 오류 메시지가 표시된다
-- [ ] 역방향·단계 건너뛰기 상태 변경 선택지가 UI에 노출되지 않는다
-- [ ] 767px 이하에서 표가 카드형으로 전환된다
+- [x] 관리자 목록에 `예정`/`진행중`/`종료` 전체 이벤트가 표시된다
+- [x] 등록 후 목록에 새 이벤트가 나타난다
+- [x] 수정 화면에 기존 값이 채워져 열리고 저장 시 반영된다
+- [x] 필수값 누락/종료일시 ≤ 시작일시 시 저장이 막히고 오류 메시지가 표시된다
+- [x] 역방향·단계 건너뛰기 상태 변경 선택지가 UI에 노출되지 않는다
+- [x] 767px 이하에서 표가 카드형으로 전환된다
 
 ### FE-9. 관리자 이벤트별 응모 현황 화면 [Should]
 
@@ -492,9 +492,9 @@ flowchart LR
 **관련 문서/규칙**: UC-12, 시나리오 4.4-1, 와이어프레임 3.3
 
 **완료 조건**
-- [ ] 관리자 목록에서 특정 이벤트의 현황 화면으로 진입할 수 있다
-- [ ] 전체 응모 횟수와 참여 사용자 수 2개 값이 표시된다
-- [ ] 응모가 없는 이벤트는 0/0으로 표시된다
+- [x] 관리자 목록에서 특정 이벤트의 현황 화면으로 진입할 수 있다
+- [x] 전체 응모 횟수와 참여 사용자 수 2개 값이 표시된다
+- [x] 응모가 없는 이벤트는 0/0으로 표시된다
 
 ---
 
@@ -528,3 +528,13 @@ flowchart LR
 | v1.11 | 2026-08-20 | BE-7 완료 처리(★ 핵심 트랜잭션): `backend/src/applications/{applications.queries,applications.service,applications.controller}.js` 구현 — `POST /api/events/:id/applications`가 단일 pg 트랜잭션(BEGIN~COMMIT/ROLLBACK) 안에서 5.8 멱등성 체크 → 5.1 상태재확인 → 5.9 User row `FOR UPDATE` 잠금 → 5.3 횟수검증 → 5.2 잔액재확인 → 5.7 원자처리(차감+EventApplication UPSERT 누적(5.4)+PointTransaction INSERT(5.5))를 각 지점 `// 5.x` 주석과 함께 Service에만 판단 로직으로 구현, idempotency_key UNIQUE 위반(동시 경합) 시 롤백 후 기존 결과 재조회 반환하는 안전망 포함. `events.router.js`에 라우트 1줄만 추가. `backend/src/tests/applications.http.test.js`(13개 테스트: 정상응모/재응모누적/포인트부족/비진행중(예정·종료)/잘못된count 4종/멱등성/필수값누락/404, 테스트 전후 point_balance·event_applications·point_transactions 원복 확인) 작성·전체 59개 테스트 통과 확인(applications 관련 파일 라인 커버리지 89~100%) 후 완료 조건 체크박스 8개 모두 체크 |
 | v1.12 | 2026-08-20 | BE-8 완료 처리: `backend/src/tests/applications.service.test.js` 신규 작성 — `applications.service.js`의 `applyToEvent`를 HTTP 없이 직접 호출하는 6개 테스트(정상응모+누적, 포인트부족 거부+잔액불변, 비진행중 이벤트 거부, 잘못된 count 3종, 멱등성 재차감없음, **5.9 동시성**: 전용 테스트 유저 생성 후 잔액 3000에 count=2(2000P)짜리 요청 2건을 서로 다른 idempotencyKey로 `Promise.allSettled` 병렬 호출해 정확히 1건만 성공하고 최종 잔액이 음수 없이 1000으로 정확히 감소함을 검증). BE-7의 HTTP 테스트와 DB 상태 간섭을 피하기 위해 seed 유저 대신 파일 전용 테스트 유저를 생성·정리(cleanup)하는 방식 채택. 전체 65개 테스트 통과 확인(재실행으로 동시성 테스트 안정성 재검증, applications 관련 파일 라인 커버리지 89~100%) 후 완료 조건 체크박스 7개 모두 체크 |
 | v1.13 | 2026-08-20 | BE-9 완료 처리: `applications.queries/service/controller.js`에 조회 기능 추가(`findMyApplications`/`listMyApplications`, `getApplicationSummary` — 이벤트 존재확인은 `events.queries.findById` 재사용), `users.router.js`에 `GET /api/me/applications`, `events.router.js`에 `GET /api/events/:id/applications`(requireAdmin, 기존 POST와 메서드로만 구분) 라우트 추가. `backend/src/tests/applications-history.http.test.js`(6개 테스트: 본인 내역(종료 포함)/타유저 미노출/관리자 현황/응모0건/404/user 403) 신규 작성 중 seed 유저 공유로 인한 파일 간 병렬 테스트 경합(`users.http.test.js`가 다른 파일이 일시 변경한 point_balance를 읽어 flaky 실패)을 발견 — `package.json`의 test 스크립트에 `--test-concurrency=1` 추가해 파일을 직렬 실행하도록 수정. 전체 71개 테스트 통과(2회 재실행으로 안정성 확인, applications 관련 파일 라인 커버리지 91~100%) 후 완료 조건 체크박스 5개 모두 체크. **이로써 BE-1~BE-9 전 Task 완료.** |
+| v1.14 | 2026-08-20 | 실제 구현 기준 docs 전체 정합성 재검토: Swagger UI(`/api-docs`, NODE_ENV로 운영환경 비활성화), JWT 만료 시간 `.env` 설정화, CORS_ORIGIN에 백엔드 자체 origin 추가, 에러 미들웨어의 JSON 파싱 실패 처리(400) 등 이번 세션에서 추가된 변경사항을 반영해 `docs/6-project-principle.md`(v1.3, 7장 백엔드 디렉토리 구조·5장 JWT 항목 수정)와 `docs/swagger.json`(에러 응답 형식·상태코드 수정, 별도 커밋 완료)을 갱신, 기반 문서 라벨 동기화 |
+| v1.15 | 2026-08-20 | FE-1 완료 처리: `frontend/`에 Vite+React 19+TypeScript 프로젝트 생성(오타 디렉토리 `fronted/`는 `frontend/`로 정리, CLAUDE.md 보존), `authStore.ts`(zustand persist, accessToken/refreshToken/role만), `apiClient.ts`(fetch 래퍼, 401 시 모듈 스코프 in-flight Promise로 동시 요청 안전하게 처리하며 refresh 1회 재시도, 실패 시 clearAuth+로그인 리다이렉트), `queryClient.ts`, `App.tsx`(`/`, `/login` placeholder 라우트 + RequireAuth 가드), `main.tsx`, `.env.example` 구현. Vitest+Testing Library로 `authStore.test.ts`/`apiClient.test.ts`/`App.test.tsx`(12개 테스트, 동시 401 요청 시 refresh 1회만 호출되는지 포함) 작성·전체 통과 확인(`apiClient.ts` 96.87%, `authStore.ts` 100% 라인 커버리지), `npm run build`/`npm run dev` 정상 동작 확인 후 완료 조건 체크박스 4개 모두 체크 |
+| v1.16 | 2026-08-20 | FE-2 완료 처리: `features/auth/{authApi,useSignup,useLogin}.ts`(TanStack Query mutation), `pages/{SignupPage,LoginPage}.tsx`(밑줄 인풋/풀폭 그린 버튼 스타일, 비밀번호확인 클라이언트 검증, 성공/실패 처리) 구현. `App.tsx`에 `/signup`, `/` `/admin`(RequireAuth+RequireAdmin 2중 가드, admin 홈은 FE-8 이전까지 placeholder) 라우트 추가. Vitest+Testing Library로 26개 테스트(신규 17개: authApi 성공/실패, 회원가입 비밀번호 불일치·성공·409 중복, 로그인 성공(user/admin)·401 실패, App 라우트 가드 전체) 작성·통과 확인(신규 파일 라인 커버리지 91.7~100%), `npm run build` 통과 후 완료 조건 체크박스 5개 모두 체크 |
+| v1.17 | 2026-08-20 | FE-3 완료 처리: `utils/pointCalc.ts`(getMaxApplyCount/getPlannedPoints/getRemainingPoints), `features/me/{meApi,useMe}.ts`(`GET /api/me`), `components/{EventStatusBadge,PointBalanceBadge,EventCard}.tsx` 구현. `index.css`에 `.page-container`/`.event-grid` 반응형 CSS(767px 이하: 패딩만/1열, 768px 이상: 최대폭 960px 중앙정렬/3열) 추가 — CSS만으로 반응(와이어프레임 1장 원칙), jsdom 한계로 실제 레이아웃 전환은 수동 확인 대상(원칙 4장). `App.tsx`의 홈 placeholder에 `PointBalanceBadge`를 실제로 배치해 "사용자 화면 공통 영역에 표시" 조건을 충족. Vitest+Testing Library로 14개 테스트 신규 작성·전체 40개 테스트 통과 확인(신규 파일 전부 라인 커버리지 100%), `npm run build` 통과 후 완료 조건 체크박스 4개 모두 체크 |
+| v1.18 | 2026-08-20 | FE-4 완료 처리: `features/events/{eventsApi,useEventList}.ts`(`GET /api/events`, 서버가 이미 진행중/예정만 반환하므로 클라이언트 재필터링 없음), `pages/EventListPage.tsx`(`PointBalanceBadge`+내 응모내역 링크, FE-3의 `.page-container`/`.event-grid` CSS 재사용, 로딩/에러/빈목록 처리) 구현. `App.tsx`의 `/`를 `EventListPage`로 교체하고 `/events/:id`(FE-5 placeholder), `/my-applications`(FE-7 placeholder) 라우트 추가(FE-2의 `/admin` placeholder 선례와 동일 패턴). Vitest+Testing Library로 16개 테스트 신규 작성·전체 49개 테스트 통과 확인(신규 파일 전부 라인 커버리지 100%), `npm run build` 통과 후 완료 조건 체크박스 4개 모두 체크 |
+| v1.19 | 2026-08-20 | FE-5 완료 처리: `features/events/useEventDetail.ts`(`GET /api/events/:id`), `pages/EventDetailPage.tsx`(이미지/경품설명 조건부 렌더, 최대 응모 가능 횟수, `-`/입력/`+` 횟수 조절, `pointCalc.ts` 기반 미리보기, 정규식 `/^\d+$/`+1이상 검증으로 0/음수/소수/비숫자 거부, 포인트 1,000 미만·비진행중 이벤트 비활성화+안내) 구현. `index.css`에 `.event-detail` 반응형 2단 그리드 추가. 응모 확정 버튼은 존재·비활성화 상태만 구현하고 실제 응모 API 연동은 FE-6 몫으로 남김. `App.tsx`의 `/events/:id` placeholder를 실제 페이지로 교체. Vitest+Testing Library로 15개 테스트 신규 작성(기존 `App.test.tsx`의 placeholder 검증 테스트도 실제 페이지 기준으로 수정)·전체 61개 테스트 통과 확인(`EventDetailPage.tsx` 라인 커버리지 100%), `npm run build` 통과 후 완료 조건 체크박스 6개 모두 체크 |
+| v1.20 | 2026-08-20 | FE-6 완료 처리: `eventsApi.ts`에 `applyToEvent`(서버 `message`를 그대로 Error에 담아 포인트부족/이벤트종료 메시지를 재분류 없이 자연스럽게 구분), `useApplyEvent.ts`(성공 시 `me`/`events`/`myApplications` 쿼리 무효화) 구현. `EventDetailPage.tsx`에 `useRef(crypto.randomUUID())` 멱등키(실패 시 유지, 성공 시에만 갱신 — count 변경 후 재시도 시의 멱등키 트레이드오프는 `ponytail:` 주석으로 남김), 응모 확정 버튼 `onClick`+`isPending` 기반 중복클릭 방지, 성공/실패 메시지 표시 추가(포인트 잔액은 `PointBalanceBadge` 자동 갱신에 위임, optimistic update 없음). Vitest+Testing Library로 9개 테스트 신규 작성·전체 70개 테스트 통과 확인(`eventsApi.ts`/`EventDetailPage.tsx` 라인 커버리지 100%), `npm run build` 통과 후 완료 조건 체크박스 5개 모두 체크 |
+| v1.21 | 2026-08-20 | FE-7 완료 처리: `features/applications/{applicationsApi,useMyApplications}.ts`(`GET /api/me/applications`, queryKey `['myApplications']`를 FE-6의 invalidate 키와 일치시켜 응모 성공 시 자동 최신화), `pages/MyApplicationsPage.tsx`(카드별 이벤트명/상태배지/누적응모/누적포인트/최근응모일, 서버가 이미 본인+종료포함 반환하므로 클라이언트 재필터링 없음, 빈 목록 안내) 구현. `App.tsx`의 `/my-applications` placeholder를 실제 페이지로 교체. Vitest+Testing Library로 6개 테스트 신규 작성(기존 `App.test.tsx`의 placeholder 검증 테스트도 실제 페이지 기준으로 수정)·전체 76개 테스트 통과 확인(신규 파일 전부 라인 커버리지 100%), `npm run build` 통과 후 완료 조건 체크박스 4개 모두 체크 |
+| v1.22 | 2026-08-20 | FE-8 완료 처리: `features/adminEvents/{adminEventsApi,useAdminEvents,useCreateEvent,useUpdateEvent,useUpdateEventStatus}.ts`(`GET /admin/events`, `POST/PUT /events`, `PATCH /events/:id/status`), `pages/admin/{AdminEventListPage,AdminEventFormPage}.tsx` 구현. 와이어프레임의 "이미지 파일 선택" UI는 실제 백엔드에 파일 업로드 인프라가 없어 URL 텍스트 입력으로 대체, 수정 폼은 백엔드 `PUT`이 status를 받지 않는 실제 계약에 맞춰 상태 필드를 아예 노출하지 않음(문서보다 실제 구현된 API 계약 우선). 상태변경은 `{예정:진행중,진행중:종료,종료:null}` 로컬 전이맵으로 허용된 다음 상태 하나만 버튼으로 노출해 역방향·건너뛰기 선택지 자체가 UI에 존재하지 않도록 구현. `.admin-table`에 767px 이하 카드형 전환 CSS 추가. `App.tsx`에 `/admin`(목록), `/admin/events/new`(등록), `/admin/events/:id/edit`(수정), `/admin/events/:id/stats`(FE-9 placeholder) 라우트 추가. Vitest+Testing Library로 19개 테스트 신규 작성(기존 `/admin` placeholder 검증 테스트도 실제 화면 기준으로 수정)·전체 95개 테스트 통과 확인(신규 파일 라인 커버리지 91.3~100%), `npm run build` 통과 후 완료 조건 체크박스 6개 모두 체크 |
+| v1.23 | 2026-08-20 | FE-9 완료 처리(마지막 FE Task): `adminEventsApi.ts`에 `getEventApplicationSummary`(`GET /events/:id/applications`), `useEventApplicationSummary.ts`, `pages/admin/AdminEventStatsPage.tsx`(전체 응모 횟수/참여 사용자 수 2개 지표, `useEventDetail` 재사용해 헤더에 이벤트 제목 표시하되 제목 조회 실패가 지표 표시를 막지 않도록 두 쿼리 독립 처리) 구현. `App.tsx`의 `/admin/events/:id/stats` placeholder를 실제 페이지로 교체(FE-8에서 이미 만든 "보기" 링크로 진입). Vitest+Testing Library로 7개 테스트 신규 작성·전체 102개 테스트 통과 확인(신규 파일 라인 커버리지 94.7~100%), `npm run build` 통과 후 완료 조건 체크박스 3개 모두 체크. **이로써 FE-1~FE-9 전 Task 완료, docs/11-plan.md의 DB/BE/FE 전체 Task가 완료됨.** |

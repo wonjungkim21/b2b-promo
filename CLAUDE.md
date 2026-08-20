@@ -32,6 +32,7 @@
 | `docs/9-erd.md` | ERD (mermaid) |
 | `docs/10-schema.sql` | PostgreSQL 17 DDL |
 | `docs/11-plan.md` | 개발 실행계획 (DB/BE/FE Task, 의존관계, 완료조건 체크박스) |
+| `docs/12-style.md` | UI 스타일 가이드 (컬러/타이포그래피/여백/공통 컴포넌트 스타일, 8-wireframe.md 화면 매핑) |
 | `docs/swagger.json` | OpenAPI 3.0.3 API 명세 |
 
 - 각 문서 상단에 버전과 "기반 문서" 목록이 있다. 상위 문서(도메인 정의서 등)를 수정하면, 이를 인용하는 하위 문서들의 버전 라벨과 내용도 함께 점검·갱신할 것.

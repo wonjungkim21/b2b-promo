@@ -1,6 +1,6 @@
 # 프레시밀 포인트 이벤트 응모(freshmeal-point-event) 구조 설계 원칙
 
-버전: v1.2 (2026-08-13)
+버전: v1.3 (2026-08-20)
 기반 문서: `docs/2-domain-definition.md` v1.5, `docs/3-usecase.md` v1.1, `docs/4-PRD.md` v1.4, `docs/5-user-scenario.md` v1.1
 
 ## 0. 이 문서의 목적
@@ -79,8 +79,8 @@ Router → Controller → Service → DB 접근 함수(Query) → pg Pool
 
 ## 5. 설정/보안/운영 원칙
 
-- **환경변수**: DB 접속정보, JWT 시크릿(Access/Refresh 각각), 포트, CORS 허용 origin은 `.env`로 관리하고 저장소에 커밋하지 않는다(`.env.example`만 커밋). `process.env` 접근은 앱 시작 시 하나의 설정 모듈(`config.js`)에서 읽어 검증하고, 나머지 코드는 이 모듈만 참조한다.
-- **JWT**: Access Token 만료는 짧게(예: 15~30분), Refresh Token은 길게(예: 7~14일) 설정하고 시크릿은 서로 다른 값을 사용한다. Refresh Token은 DB(User와 연결된 별도 컬럼 또는 테이블)에 저장해 로그아웃 시 폐기할 수 있게 한다(PRD 10장 리스크 반영). 구체적 만료 시간 값은 구현 시 상수 하나로 고정한다.
+- **환경변수**: DB 접속정보, JWT 시크릿(Access/Refresh 각각), JWT 만료 기간(Access/Refresh 각각), 포트, CORS 허용 origin, 실행 환경 구분(`NODE_ENV`)은 `.env`로 관리하고 저장소에 커밋하지 않는다(`.env.example`만 커밋). `process.env` 접근은 앱 시작 시 하나의 설정 모듈(`config.js`)에서 읽어 검증하고, 나머지 코드는 이 모듈만 참조한다.
+- **JWT**: Access Token 만료는 짧게(예: 15~30분), Refresh Token은 길게(예: 7~14일) 설정하고 시크릿은 서로 다른 값을 사용한다(시크릿이 같으면 앱이 기동 실패하도록 검증). Refresh Token은 opaque 랜덤 토큰을 발급해 해시로 저장하고(User와 연결된 별도 테이블), 로그아웃 시 폐기할 수 있게 한다(PRD 10장 리스크 반영). 만료 시간 값은 `.env`(`JWT_ACCESS_EXPIRES_IN`, `JWT_REFRESH_EXPIRES_IN_DAYS`)로 환경별로 조정 가능하며, 값을 생략하면 기본값(30분/14일)을 사용한다.
 - **CORS**: 프론트엔드 개발/배포 origin만 허용 목록에 명시한다. `*` 와일드카드는 쓰지 않는다.
 - **에러 핸들링**: Express 공통 에러 핸들러 미들웨어 하나로 통일한다. 도메인 규칙 위반(5.1~5.3 등)은 Service가 명시적 에러 타입/코드로 던지고, 공통 핸들러가 이를 받아 4xx + 사용자 메시지로 변환한다. 그 외 예기치 못한 에러는 500과 일반 메시지로 응답하고 서버 로그에는 상세 스택을 남긴다.
 - **로깅**: 요청 단위 로그(메서드/경로/상태코드/응답시간) 1줄과, 에러 발생 시 스택 트레이스만 남긴다. 별도 로깅 인프라(ELK 등)는 도입하지 않고 콘솔 출력으로 충분하다.
@@ -159,23 +159,23 @@ backend/
 │  │  ├─ users.service.js
 │  │  └─ users.queries.js
 │  ├─ events/
-│  │  ├─ events.router.js       # UC-2, UC-3, UC-9~11
+│  │  ├─ events.router.js       # UC-2, UC-3, UC-9~11 (응모 확정/응모현황 GET·POST 라우트도 여기서 마운트)
+│  │  ├─ admin-events.router.js # 관리자 전체 이벤트 목록(GET /api/admin/events) 전용
 │  │  ├─ events.controller.js
 │  │  ├─ events.service.js      # 5.1, 3.2 상태전이 규칙
 │  │  └─ events.queries.js
-│  ├─ applications/
-│  │  ├─ applications.router.js       # UC-5~8, UC-12
-│  │  ├─ applications.controller.js
-│  │  ├─ applications.service.js      # 5.2~5.9 핵심 트랜잭션 로직
+│  ├─ applications/              # 별도 router.js 없이 events.router.js/users.router.js가 컨트롤러를 직접 마운트한다(불필요한 라우터 파일 생략)
+│  │  ├─ applications.controller.js  # UC-7(응모 확정), UC-8(내 응모 내역), UC-12(응모 현황)
+│  │  ├─ applications.service.js      # 5.1~5.9 핵심 트랜잭션 로직
 │  │  └─ applications.queries.js      # EventApplication/PointTransaction 쿼리
-│  └─ tests/
-│     └─ applications.service.test.js # 4장 필수 테스트 항목
+│  └─ tests/                     # 엔드포인트/서비스별 자동 테스트(*.http.test.js, *.service.test.js)
 ├─ .env.example
 └─ package.json
 ```
 
 - `applications.service.js`가 이 프로젝트에서 가장 중요한 파일이다. UC-7 응모 확정의 5.1~5.9 규칙 전부가 여기 모인다.
-- 각 도메인 폴더(`events/`, `applications/` 등)는 router→controller→service→queries 4파일 패턴을 동일하게 반복한다. 폴더 구조 자체가 2장의 레이어 원칙을 강제한다.
+- 각 도메인 폴더(`events/`, `applications/` 등)는 router→controller→service→queries 4파일 패턴을 기본으로 하되, `applications/`처럼 라우팅 경로가 다른 도메인 경로(`/api/events/:id/applications`, `/api/me/applications`)에 얹히는 경우는 router 파일 없이 상위 도메인의 router가 컨트롤러를 직접 마운트한다(원칙 5번: 1개 마운트 지점만 필요하면 별도 파일로 추상화하지 않는다).
+- `GET /api-docs`(swagger-ui-express)로 `docs/swagger.json`을 그대로 서빙하는 개발용 API 문서 페이지를 `app.js`에 등록하며, `NODE_ENV=production`일 때는 등록 자체를 하지 않는다.
 
 ## 8. 변경 이력
 
@@ -184,3 +184,4 @@ backend/
 | v1.0 | 2026-08-13 | 초안 작성 (docs/2-domain-definition.md, docs/3-usecase.md, docs/4-PRD.md, docs/5-user-scenario.md 기반 최상위 원칙/레이어 원칙/네이밍/테스트/설정·보안/프론트·백엔드 디렉토리 구조) |
 | v1.1 | 2026-08-13 | docs 전체 정합성 검토 반영: 1장의 잘못된 절 참조("3장 참조" → "2.1 참조") 수정 |
 | v1.2 | 2026-08-13 | docs 전체 정합성 재검토 반영: 기반 문서 라벨을 도메인 정의서 v1.5, PRD v1.4, 사용자시나리오 v1.1로 정정 |
+| v1.3 | 2026-08-20 | BE-1~BE-9 실제 구현 반영: 7장 백엔드 디렉토리 구조를 실제 코드와 일치하도록 수정(`applications/`는 별도 router.js 없이 events.router.js/users.router.js가 컨트롤러를 직접 마운트, `events/admin-events.router.js` 추가, `tests/`에 엔드포인트별 자동 테스트 다수 존재, `/api-docs` swagger UI 서빙 언급 추가). 5장 JWT 항목을 실제 구현(opaque 랜덤 refresh token, 만료 시간은 `.env`로 환경별 조정 가능)에 맞게 수정 |
