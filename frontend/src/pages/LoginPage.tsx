@@ -12,7 +12,7 @@ const inputStyle = {
 
 const buttonStyle = {
   width: '100%',
-  backgroundColor: '#00754A',
+  backgroundColor: '#416922',
   color: '#fff',
   border: 'none',
   padding: '10px 0',
@@ -42,26 +42,32 @@ function LoginPage() {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        style={inputStyle}
-        placeholder="로그인 ID"
-        value={loginId}
-        onChange={(e) => setLoginId(e.target.value)}
-      />
-      <input
-        style={inputStyle}
-        type="password"
-        placeholder="비밀번호"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      {loginMutation.isError && <div>{loginMutation.error.message}</div>}
-      <button type="submit" style={buttonStyle}>
-        로그인
-      </button>
-      <Link to="/signup">계정이 없나요? 회원가입</Link>
-    </form>
+    <div className="auth-page">
+      <form className="auth-card" onSubmit={handleSubmit}>
+        <div className="brand-logo">
+          <img src="/logo.png" alt="FreshMeal" />
+          <span>FreshMeal</span>
+        </div>
+        <input
+          style={inputStyle}
+          placeholder="로그인 ID"
+          value={loginId}
+          onChange={(e) => setLoginId(e.target.value)}
+        />
+        <input
+          style={inputStyle}
+          type="password"
+          placeholder="비밀번호"
+          value={password}
+          onChange={(e) => setPassword(e.target.value)}
+        />
+        {loginMutation.isError && <div>{loginMutation.error.message}</div>}
+        <button type="submit" style={buttonStyle}>
+          로그인
+        </button>
+        <Link to="/signup">계정이 없나요? 회원가입</Link>
+      </form>
+    </div>
   );
 }
 

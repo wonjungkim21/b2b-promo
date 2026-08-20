@@ -18,8 +18,8 @@ function EventCard({ title, startAt, endAt, status }: EventCardProps) {
   return (
     <div className="event-card">
       <EventStatusBadge status={status} />
-      <div>{title}</div>
-      <div>
+      <div className="event-card-title">{title}</div>
+      <div className="event-card-period">
         {formatDate(startAt)} ~ {formatDate(endAt)}
       </div>
     </div>

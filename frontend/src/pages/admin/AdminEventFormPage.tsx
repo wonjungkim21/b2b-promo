@@ -4,6 +4,8 @@ import { useEventDetail } from '../../features/events/useEventDetail';
 import { useCreateEvent } from '../../features/adminEvents/useCreateEvent';
 import { useUpdateEvent } from '../../features/adminEvents/useUpdateEvent';
 import type { EventStatus } from '../../components/EventStatusBadge';
+import TopNav from '../../components/TopNav';
+import AppHeader from '../../components/AppHeader';
 
 function toDatetimeLocalValue(iso: string): string {
   const d = new Date(iso);
@@ -70,7 +72,10 @@ function AdminEventFormPage() {
   }
 
   return (
-    <div className="page-container">
+    <div>
+      <AppHeader />
+      <div className="page-container">
+      <TopNav backTo="/admin" />
       <h1>{isEdit ? '이벤트 수정' : '이벤트 등록'}</h1>
       <form onSubmit={handleSubmit}>
         <label>
@@ -121,6 +126,7 @@ function AdminEventFormPage() {
           저장
         </button>
       </form>
+      </div>
     </div>
   );
 }

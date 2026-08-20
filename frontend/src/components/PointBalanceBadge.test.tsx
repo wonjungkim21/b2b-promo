@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { render, screen, findByText, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import PointBalanceBadge from './PointBalanceBadge';
 
@@ -37,7 +37,9 @@ describe('PointBalanceBadge', () => {
 
     const { container } = renderWithClient();
 
-    await findByText(container, /보유 포인트 5,?500 P/);
+    await waitFor(() => {
+      expect(container.querySelector('.point-balance')?.textContent).toBe('보유 포인트 5,500 P');
+    });
   });
 
   it('실패 시 아무 텍스트도 렌더링되지 않는다', async () => {

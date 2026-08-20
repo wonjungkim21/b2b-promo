@@ -1,6 +1,6 @@
 # 프레시밀 포인트 이벤트 응모(freshmeal-point-event) 구조 설계 원칙
 
-버전: v1.3 (2026-08-20)
+버전: v1.4 (2026-08-20)
 기반 문서: `docs/2-domain-definition.md` v1.5, `docs/3-usecase.md` v1.1, `docs/4-PRD.md` v1.4, `docs/5-user-scenario.md` v1.1
 
 ## 0. 이 문서의 목적
@@ -104,28 +104,43 @@ frontend/
 │  │     ├─ AdminEventFormPage.tsx    # UC-9/UC-10 등록·수정 공용
 │  │     └─ AdminEventStatsPage.tsx   # UC-12
 │  ├─ components/               # 여러 화면에서 재사용하는 UI 조각
+│  │  ├─ AppHeader.tsx          # 전 화면 공통 상단 브랜드 바(로고/워드마크 + 내 응모 내역 아이콘)
+│  │  ├─ TopNav.tsx             # 화면별 뒤로가기(고정 목적지)/로그아웃 바
 │  │  ├─ PointBalanceBadge.tsx  # UC-4 공통 노출 영역
 │  │  ├─ EventCard.tsx
 │  │  └─ EventStatusBadge.tsx
 │  ├─ features/                 # 도메인 단위 API 훅 + 클라이언트 타입
 │  │  ├─ auth/
 │  │  │  ├─ useLogin.ts         # TanStack Query mutation
+│  │  │  ├─ useSignup.ts
 │  │  │  └─ authApi.ts          # fetch 함수
+│  │  ├─ me/
+│  │  │  ├─ useMe.ts
+│  │  │  └─ meApi.ts
 │  │  ├─ events/
 │  │  │  ├─ useEventList.ts
 │  │  │  ├─ useEventDetail.ts
 │  │  │  ├─ useApplyEvent.ts    # UC-7 mutation (멱등키 생성 포함)
 │  │  │  └─ eventsApi.ts
-│  │  └─ applications/
-│  │     ├─ useMyApplications.ts
-│  │     └─ applicationsApi.ts
+│  │  ├─ applications/
+│  │  │  ├─ useMyApplications.ts
+│  │  │  └─ applicationsApi.ts
+│  │  └─ adminEvents/           # UC-9~12 관리자 전용 훅
+│  │     ├─ useAdminEvents.ts
+│  │     ├─ useCreateEvent.ts
+│  │     ├─ useUpdateEvent.ts
+│  │     ├─ useUpdateEventStatus.ts
+│  │     ├─ useEventApplicationSummary.ts
+│  │     └─ adminEventsApi.ts
 │  ├─ stores/                   # Zustand: 클라이언트 상태만
-│  │  └─ authStore.ts           # accessToken, currentUser role 등
+│  │  └─ authStore.ts           # accessToken/refreshToken/role, localStorage 영속
 │  ├─ lib/
-│  │  ├─ apiClient.ts           # axios/fetch 공통 설정(baseURL, 인터셉터)
+│  │  ├─ apiClient.ts           # fetch 공통 설정(baseURL, 401 시 refresh 후 재시도)
 │  │  └─ queryClient.ts
 │  └─ utils/
 │     └─ pointCalc.ts           # 응모 횟수 미리보기 계산(UC-6, 서버 재검증 전제)
+├─ public/
+│  └─ logo.png                  # 프레시밀 브랜드 로고(favicon 겸용)
 ├─ .env.example
 └─ package.json
 ```
@@ -185,3 +200,4 @@ backend/
 | v1.1 | 2026-08-13 | docs 전체 정합성 검토 반영: 1장의 잘못된 절 참조("3장 참조" → "2.1 참조") 수정 |
 | v1.2 | 2026-08-13 | docs 전체 정합성 재검토 반영: 기반 문서 라벨을 도메인 정의서 v1.5, PRD v1.4, 사용자시나리오 v1.1로 정정 |
 | v1.3 | 2026-08-20 | BE-1~BE-9 실제 구현 반영: 7장 백엔드 디렉토리 구조를 실제 코드와 일치하도록 수정(`applications/`는 별도 router.js 없이 events.router.js/users.router.js가 컨트롤러를 직접 마운트, `events/admin-events.router.js` 추가, `tests/`에 엔드포인트별 자동 테스트 다수 존재, `/api-docs` swagger UI 서빙 언급 추가). 5장 JWT 항목을 실제 구현(opaque 랜덤 refresh token, 만료 시간은 `.env`로 환경별 조정 가능)에 맞게 수정 |
+| v1.4 | 2026-08-20 | FE-1~FE-9 완료 이후 실제 구현 반영: 6장 프론트엔드 디렉토리 구조에 `AppHeader.tsx`/`TopNav.tsx`(공통 상단 브랜드 바·뒤로가기/로그아웃), `features/me/`, `features/adminEvents/`, `public/logo.png`를 추가해 실제 코드와 일치하도록 수정 |

@@ -87,7 +87,7 @@ describe('EventDetailPage', () => {
     renderPage();
 
     expect(await screen.findByText('여름 특가')).toBeInTheDocument();
-    expect(screen.queryByRole('img')).not.toBeInTheDocument();
+    expect(screen.queryByAltText('여름 특가')).not.toBeInTheDocument();
     expect(screen.queryByText(/경품\/혜택/)).not.toBeInTheDocument();
   });
 
@@ -225,6 +225,39 @@ describe('EventDetailPage', () => {
 
     expect(await screen.findByText(/누적 응모 횟수: 1회/)).toBeInTheDocument();
     expect(screen.getByText(/누적 사용 포인트: 1,000 P/)).toBeInTheDocument();
+  });
+
+  it('응모 확정 클릭 시 취소 불가 안내 확인창을 띄운다', async () => {
+    vi.stubGlobal(
+      'fetch',
+      mockFetchByPath({
+        '/events/1/applications': jsonResponse(true, applyResult()),
+        '/events/1': jsonResponse(true, baseEvent()),
+        '/me': jsonResponse(true, { id: 1, name: '홍길동', role: 'user', pointBalance: 5500 }),
+      }),
+    );
+
+    renderPage();
+
+    fireEvent.click(await screen.findByRole('button', { name: '응모 확정' }));
+
+    expect(window.confirm).toHaveBeenCalledWith('응모 후에는 취소할 수 없습니다. 응모하시겠습니까?');
+  });
+
+  it('확인창에서 취소를 선택하면 응모 요청이 전송되지 않는다', async () => {
+    vi.spyOn(window, 'confirm').mockReturnValue(false);
+    const fetchMock = mockFetchByPath({
+      '/events/1/applications': jsonResponse(true, applyResult()),
+      '/events/1': jsonResponse(true, baseEvent()),
+      '/me': jsonResponse(true, { id: 1, name: '홍길동', role: 'user', pointBalance: 5500 }),
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    renderPage();
+
+    fireEvent.click(await screen.findByRole('button', { name: '응모 확정' }));
+
+    expect(applicationsCalls(fetchMock)).toHaveLength(0);
   });
 
   it('멱등키는 실패 시 유지되고 성공 후에만 새 키로 교체된다', async () => {

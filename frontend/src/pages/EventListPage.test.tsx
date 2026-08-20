@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { MemoryRouter } from 'react-router-dom';
 import EventListPage from './EventListPage';
+import { useAuthStore } from '../stores/authStore';
 
 function jsonResponse(ok: boolean, body: unknown = {}): Response {
   return { ok, json: async () => body } as Response;
@@ -31,6 +32,7 @@ function renderPage() {
 
 describe('EventListPage', () => {
   beforeEach(() => {
+    useAuthStore.getState().setAuth({ accessToken: 'token-1', refreshToken: 'refresh-1', role: 'user' });
     vi.stubGlobal(
       'fetch',
       mockFetchByPath({ '/me': jsonResponse(false) }),

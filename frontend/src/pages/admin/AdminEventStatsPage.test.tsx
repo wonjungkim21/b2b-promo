@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { MemoryRouter, Route, Routes } from 'react-router-dom';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import AdminEventStatsPage from './AdminEventStatsPage';
@@ -88,11 +88,21 @@ describe('AdminEventStatsPage', () => {
     expect(await screen.findByText('여름 특가 이벤트 - 응모 현황')).toBeInTheDocument();
   });
 
-  it('목록으로 링크는 /admin으로 이동한다', async () => {
-    renderPage();
+  it('뒤로 버튼을 클릭하면 /admin으로 이동한다', async () => {
+    render(
+      <QueryClientProvider client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}>
+        <MemoryRouter initialEntries={['/admin/events/1/stats']}>
+          <Routes>
+            <Route path="/admin/events/:id/stats" element={<AdminEventStatsPage />} />
+            <Route path="/admin" element={<div>관리자 목록 화면</div>} />
+          </Routes>
+        </MemoryRouter>
+      </QueryClientProvider>,
+    );
 
-    const link = await screen.findByRole('link', { name: '< 목록으로' });
-    expect(link).toHaveAttribute('href', '/admin');
+    fireEvent.click(await screen.findByRole('button', { name: '← 뒤로' }));
+
+    expect(await screen.findByText('관리자 목록 화면')).toBeInTheDocument();
   });
 
   it('응모 현황 조회 실패 시 에러 메시지가 표시된다', async () => {

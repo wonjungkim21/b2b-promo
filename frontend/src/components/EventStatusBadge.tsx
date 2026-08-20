@@ -1,8 +1,8 @@
 export type EventStatus = '예정' | '진행중' | '종료';
 
 const STATUS_STYLES: Record<EventStatus, React.CSSProperties> = {
-  진행중: { backgroundColor: '#00754A', color: '#fff' },
-  예정: { backgroundColor: '#F5F5F3', color: '#767676' },
+  진행중: { backgroundColor: '#416922', color: '#fff' },
+  예정: { backgroundColor: '#E7EEDD', color: '#2F4E19' },
   종료: { backgroundColor: '#E5E5E1', color: '#767676' },
 };
 

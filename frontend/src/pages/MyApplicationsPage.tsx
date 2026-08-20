@@ -1,6 +1,7 @@
-import { Link } from 'react-router-dom';
 import { useMyApplications } from '../features/applications/useMyApplications';
 import EventStatusBadge from '../components/EventStatusBadge';
+import TopNav from '../components/TopNav';
+import AppHeader from '../components/AppHeader';
 
 function formatAppliedAt(iso: string): string {
   const d = new Date(iso);
@@ -15,30 +16,33 @@ function MyApplicationsPage() {
   const { data: applications, isLoading, isError } = useMyApplications();
 
   return (
-    <div className="page-container">
-      <Link to="/">{'< 뒤로'}</Link>
-      <h1>내 응모 내역</h1>
+    <div>
+      <AppHeader />
+      <div className="page-container">
+        <TopNav backTo="/" />
+        <h1>내 응모 내역</h1>
 
-      {isLoading && <div>로딩중...</div>}
-      {isError && <div>응모 내역을 불러오지 못했습니다.</div>}
-      {!isLoading && !isError && applications && applications.length === 0 && (
-        <div>응모 내역이 없습니다.</div>
-      )}
+        {isLoading && <div>로딩중...</div>}
+        {isError && <div>응모 내역을 불러오지 못했습니다.</div>}
+        {!isLoading && !isError && applications && applications.length === 0 && (
+          <div>응모 내역이 없습니다.</div>
+        )}
 
-      {!isLoading && !isError && applications && applications.length > 0 && (
-        <div>
-          {applications.map((item) => (
-            <div key={item.eventId} className="event-card">
-              <div>
-                {item.eventTitle} <EventStatusBadge status={item.eventStatus} />
+        {!isLoading && !isError && applications && applications.length > 0 && (
+          <div>
+            {applications.map((item) => (
+              <div key={item.eventId} className="event-card">
+                <div>
+                  {item.eventTitle} <EventStatusBadge status={item.eventStatus} />
+                </div>
+                <div>누적 응모: {item.totalCount}회</div>
+                <div>누적 사용 포인트: {item.totalPointsUsed.toLocaleString()} P</div>
+                <div>최근 응모일: {formatAppliedAt(item.lastAppliedAt)}</div>
               </div>
-              <div>누적 응모: {item.totalCount}회</div>
-              <div>누적 사용 포인트: {item.totalPointsUsed.toLocaleString()} P</div>
-              <div>최근 응모일: {formatAppliedAt(item.lastAppliedAt)}</div>
-            </div>
-          ))}
-        </div>
-      )}
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

@@ -1,7 +1,7 @@
 # 프레시밀 포인트 이벤트 응모(freshmeal-point-event) 기술 아키텍처 다이어그램
 
-버전: v1.3 (2026-08-20)
-기반 문서: `docs/4-PRD.md` v1.4, `docs/6-project-principle.md` v1.3
+버전: v1.4 (2026-08-20)
+기반 문서: `docs/4-PRD.md` v1.4, `docs/6-project-principle.md` v1.4
 
 ## 1. 전체 시스템 구성도
 
@@ -57,6 +57,8 @@ flowchart TB
     end
 
     subgraph Components["Components (공용 UI)"]
+        AppHeader["AppHeader (상단 브랜드 바, 전 화면 공통)"]
+        TopNav["TopNav (뒤로가기/로그아웃, 화면별)"]
         PointBadge["PointBalanceBadge"]
         EventCard["EventCard"]
         StatusBadge["EventStatusBadge"]
@@ -75,20 +77,31 @@ flowchart TB
     Login --> AuthHooks
     Login --> Store
 
+    EventList --> AppHeader
+    EventList --> TopNav
     EventList --> EventHooks
     EventList --> EventCard
     EventList --> PointBadge
 
+    EventDetail --> AppHeader
+    EventDetail --> TopNav
     EventDetail --> EventHooks
     EventDetail --> PointBadge
     EventDetail --> StatusBadge
     EventDetail --> Utils
 
+    MyApps --> AppHeader
+    MyApps --> TopNav
     MyApps --> AppHooks
 
+    AdminEvent --> AppHeader
+    AdminEvent --> TopNav
     AdminEvent --> EventHooks
+    AdminStats --> AppHeader
+    AdminStats --> TopNav
     AdminStats --> EventHooks
 
+    TopNav --> Store
     AuthHooks --> Store
 ```
 
@@ -124,3 +137,4 @@ sequenceDiagram
 | v1.1 | 2026-08-13 | 프론트엔드 컴포넌트 구조 다이어그램(2장) 추가, 이후 절 번호 조정 |
 | v1.2 | 2026-08-13 | docs 전체 정합성 재검토 반영: 기반 문서 라벨을 PRD v1.4, 구조 설계 원칙 v1.2로 정정 |
 | v1.3 | 2026-08-20 | BE-1~BE-9 실제 구현 반영 정합성 재검토: 전체 시스템 구성도(1장)는 Router→Controller→Service→Query 흐름을 추상적으로 표현해 실제 구현(admin-events.router.js 분리, applications 컨트롤러의 상위 도메인 router 마운트 등 세부 라우팅 방식)과 여전히 일치함을 확인, 기반 문서 라벨만 구조 설계 원칙 v1.3으로 정정 |
+| v1.4 | 2026-08-20 | FE-1~FE-9 완료 이후 추가된 공통 컴포넌트 반영: 2장 프론트엔드 컴포넌트 구조도에 `AppHeader`(상단 브랜드 바)·`TopNav`(뒤로가기/로그아웃)를 Components에 추가하고 전 Pages와의 연결관계 표기, 기반 문서 라벨을 구조 설계 원칙 v1.4로 정정 |

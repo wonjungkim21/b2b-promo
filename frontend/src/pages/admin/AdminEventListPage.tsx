@@ -1,5 +1,7 @@
 import { Link } from 'react-router-dom';
 import EventStatusBadge, { type EventStatus } from '../../components/EventStatusBadge';
+import TopNav from '../../components/TopNav';
+import AppHeader from '../../components/AppHeader';
 import { useAdminEvents } from '../../features/adminEvents/useAdminEvents';
 import { useUpdateEventStatus } from '../../features/adminEvents/useUpdateEventStatus';
 
@@ -22,11 +24,14 @@ function AdminEventListPage() {
   const statusMutation = useUpdateEventStatus();
 
   return (
-    <div className="page-container">
-      <header>
-        <h1>freshmeal 관리자</h1>
-        <Link to="/admin/events/new">+ 이벤트 등록</Link>
-      </header>
+    <div>
+      <AppHeader />
+      <div className="page-container">
+        <TopNav />
+        <header>
+          <h1>이벤트 관리</h1>
+          <Link to="/admin/events/new">+ 이벤트 등록</Link>
+        </header>
 
       {isLoading && <div>로딩중...</div>}
       {isError && <div>이벤트 목록을 불러오지 못했습니다.</div>}
@@ -74,6 +79,7 @@ function AdminEventListPage() {
           </tbody>
         </table>
       )}
+      </div>
     </div>
   );
 }

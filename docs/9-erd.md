@@ -1,7 +1,7 @@
 # 프레시밀 포인트 이벤트 응모(freshmeal-point-event) ERD
 
-버전: v1.2 (2026-08-20)
-기반 문서: `docs/2-domain-definition.md` v1.5, `docs/4-PRD.md` v1.4, `docs/6-project-principle.md` v1.3
+버전: v1.3 (2026-08-20)
+기반 문서: `docs/2-domain-definition.md` v1.5, `docs/4-PRD.md` v1.4, `docs/6-project-principle.md` v1.4
 
 ## 1. 다이어그램
 
@@ -104,3 +104,4 @@ erDiagram
 | v1.0 | 2026-08-13 | 초안 작성 (users/events/event_applications/point_transactions/refresh_tokens ERD 및 도메인 규칙 매핑) |
 | v1.1 | 2026-08-13 | docs 전체 정합성 재검토 반영: 기반 문서 라벨을 PRD v1.4, 구조 설계 원칙 v1.2로 정정 |
 | v1.2 | 2026-08-20 | BE-1~BE-9 실제 구현 반영 정합성 재검토: 실제 DB 스키마는 이번 백엔드 개발 기간 동안 변경되지 않아 ERD 내용은 그대로이며, 기반 문서 라벨만 구조 설계 원칙 v1.3으로 정정 |
+| v1.3 | 2026-08-20 | FE-1~FE-9 완료 이후 정합성 재검토: 프론트엔드 UI 변경은 DB 스키마에 영향이 없어 ERD 내용은 그대로이며, 기반 문서 라벨만 구조 설계 원칙 v1.4로 정정 |
