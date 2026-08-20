@@ -1,6 +1,6 @@
 # 프레시밀 포인트 이벤트 응모(freshmeal-point-event) 개발 실행계획
 
-버전: v1.5 (2026-08-13)
+버전: v1.13 (2026-08-20)
 
 기반 문서:
 - `docs/2-domain-definition.md` v1.5 (도메인 정의서)
@@ -194,11 +194,11 @@ flowchart LR
 **관련 문서/규칙**: UC-0, UC-1, 시나리오 3.1-1/3.1-2/3.2-1/3.2-2, PRD 7장, 원칙 5장(JWT/비밀번호)
 
 **완료 조건**
-- [ ] 회원가입 시 role=user로 계정이 생성되고 비밀번호가 평문으로 저장되지 않는다
-- [ ] 중복 loginId 가입 요청이 계정 생성 없이 오류를 반환한다
-- [ ] 올바른 자격증명 로그인 시 Access/Refresh Token과 role이 응답에 포함된다
-- [ ] 잘못된 자격증명 로그인 시 토큰 발급 없이 401을 반환한다
-- [ ] Refresh Token으로 새 Access Token을 재발급받을 수 있고, 로그아웃 후 동일 Refresh Token 재사용이 거부된다
+- [x] 회원가입 시 role=user로 계정이 생성되고 비밀번호가 평문으로 저장되지 않는다
+- [x] 중복 loginId 가입 요청이 계정 생성 없이 오류를 반환한다
+- [x] 올바른 자격증명 로그인 시 Access/Refresh Token과 role이 응답에 포함된다
+- [x] 잘못된 자격증명 로그인 시 토큰 발급 없이 401을 반환한다
+- [x] Refresh Token으로 새 Access Token을 재발급받을 수 있고, 로그아웃 후 동일 Refresh Token 재사용이 거부된다
 
 ### BE-3. JWT 인증·관리자 권한 미들웨어 [Must]
 
@@ -211,9 +211,9 @@ flowchart LR
 **관련 문서/규칙**: 도메인 2장(모든 기능은 인증 필요), PRD 3장, 원칙 2.3, PRD 11장(권한 세분화 제외)
 
 **완료 조건**
-- [ ] 토큰 없음/만료/위조 요청이 401을 반환한다
-- [ ] 유효한 토큰 요청에서 컨트롤러가 `req.user.id`, `req.user.role`을 사용할 수 있다
-- [ ] role=user가 관리자 전용 엔드포인트 호출 시 403을 반환한다
+- [x] 토큰 없음/만료/위조 요청이 401을 반환한다
+- [x] 유효한 토큰 요청에서 컨트롤러가 `req.user.id`, `req.user.role`을 사용할 수 있다
+- [x] role=user가 관리자 전용 엔드포인트 호출 시 403을 반환한다
 
 ### BE-4. 내 정보/보유 포인트 조회 API [Must]
 
@@ -226,9 +226,9 @@ flowchart LR
 **관련 문서/규칙**: UC-4, 시나리오 3.5-1, 원칙 6장(PointBalanceBadge가 소비)
 
 **완료 조건**
-- [ ] 로그인 사용자가 본인 pointBalance를 조회할 수 있다
-- [ ] 다른 사용자의 포인트는 조회할 수 없다(항상 토큰의 userId 기준)
-- [ ] 비인증 요청은 401을 반환한다
+- [x] 로그인 사용자가 본인 pointBalance를 조회할 수 있다
+- [x] 다른 사용자의 포인트는 조회할 수 없다(항상 토큰의 userId 기준)
+- [x] 비인증 요청은 401을 반환한다
 
 ### BE-5. 사용자 이벤트 목록/상세 조회 API [Must]
 
@@ -242,10 +242,10 @@ flowchart LR
 **관련 문서/규칙**: UC-2, UC-3, 시나리오 3.3-1/3.4-1, 도메인 3.2
 
 **완료 조건**
-- [ ] 목록 응답에 `종료` 상태 이벤트가 포함되지 않는다
-- [ ] `진행중`/`예정` 이벤트는 모두 포함된다
-- [ ] 상세 응답에 이벤트명/이미지/시작·종료일시/경품설명/상태가 포함되고, 이미지·경품설명은 null이어도 정상 응답한다
-- [ ] 존재하지 않는 이벤트 id 요청 시 404를 반환한다
+- [x] 목록 응답에 `종료` 상태 이벤트가 포함되지 않는다
+- [x] `진행중`/`예정` 이벤트는 모두 포함된다
+- [x] 상세 응답에 이벤트명/이미지/시작·종료일시/경품설명/상태가 포함되고, 이미지·경품설명은 null이어도 정상 응답한다
+- [x] 존재하지 않는 이벤트 id 요청 시 404를 반환한다
 
 ### BE-6. 관리자 이벤트 등록/수정/상태변경 API [Must]
 
@@ -259,12 +259,12 @@ flowchart LR
 **관련 문서/규칙**: UC-9/10/11, 도메인 3.2, 시나리오 4.1-1/4.1-2/4.2-1/4.2-2/4.3-1~4.3-4
 
 **완료 조건**
-- [ ] 필수값 누락 또는 종료일시 ≤ 시작일시 요청이 400으로 거부된다
-- [ ] 이미지/경품설명 없이 등록·수정이 가능하다
-- [ ] `예정→진행중`, `진행중→종료` 전이가 성공한다
-- [ ] `진행중→예정`, `종료→진행중` 등 역방향 전이가 거부된다
-- [ ] `예정→종료` 단계 건너뛰기가 거부된다
-- [ ] role=user의 등록/수정/상태변경 요청이 403으로 거부된다
+- [x] 필수값 누락 또는 종료일시 ≤ 시작일시 요청이 400으로 거부된다
+- [x] 이미지/경품설명 없이 등록·수정이 가능하다
+- [x] `예정→진행중`, `진행중→종료` 전이가 성공한다
+- [x] `진행중→예정`, `종료→진행중` 등 역방향 전이가 거부된다
+- [x] `예정→종료` 단계 건너뛰기가 거부된다
+- [x] role=user의 등록/수정/상태변경 요청이 403으로 거부된다
 
 ### BE-7. ★ 응모 확정 API (원자적 트랜잭션 + 멱등성 + 동시성) [Must]
 
@@ -291,14 +291,14 @@ flowchart LR
 **관련 문서/규칙**: UC-7, 도메인 5.1 / 5.2 / 5.3 / 5.4 / 5.5 / 5.7 / 5.8 / 5.9, 시나리오 3.8-1~3.8-5, 원칙 2.2 / 7장(`applications.service.js`가 가장 중요한 파일)
 
 **완료 조건**
-- [ ] 정상 응모 시 pointBalance 차감·EventApplication 누적·PointTransaction 생성이 모두 반영된다 (5.7)
-- [ ] 동일 User-Event 재응모 시 새 EventApplication row가 생기지 않고 기존 row가 누적된다 (5.4)
-- [ ] 포인트 부족 요청이 차감 없이 거부되고 DB 상태가 변하지 않는다 (5.2)
-- [ ] `예정`/`종료` 상태 이벤트 응모가 차감 없이 거부된다 (5.1)
-- [ ] count가 0/음수/소수/비숫자면 400으로 거부된다 (5.3)
-- [ ] 동일 idempotencyKey 재요청이 재차감 없이 이전 결과를 반환한다 (5.8)
-- [ ] 트랜잭션 중간 실패 시 세 변경이 모두 롤백된다 (5.7)
-- [ ] 도메인 규칙 판단 코드가 Controller/Query가 아닌 Service에만 존재하고, 각 규칙 지점에 `// 5.x` 주석이 있다
+- [x] 정상 응모 시 pointBalance 차감·EventApplication 누적·PointTransaction 생성이 모두 반영된다 (5.7)
+- [x] 동일 User-Event 재응모 시 새 EventApplication row가 생기지 않고 기존 row가 누적된다 (5.4)
+- [x] 포인트 부족 요청이 차감 없이 거부되고 DB 상태가 변하지 않는다 (5.2)
+- [x] `예정`/`종료` 상태 이벤트 응모가 차감 없이 거부된다 (5.1)
+- [x] count가 0/음수/소수/비숫자면 400으로 거부된다 (5.3)
+- [x] 동일 idempotencyKey 재요청이 재차감 없이 이전 결과를 반환한다 (5.8)
+- [x] 트랜잭션 중간 실패 시 세 변경이 모두 롤백된다 (5.7)
+- [x] 도메인 규칙 판단 코드가 Controller/Query가 아닌 Service에만 존재하고, 각 규칙 지점에 `// 5.x` 주석이 있다
 
 ### BE-8. 응모 확정 서비스 자동 테스트 [Must]
 
@@ -311,13 +311,13 @@ flowchart LR
 **관련 문서/규칙**: 원칙 4장(테스트 원칙 — 반드시 자동 테스트 대상), 도메인 5.1~5.4 / 5.8 / 5.9
 
 **완료 조건**
-- [ ] 정상 응모 + 누적 갱신 테스트 통과 (5.4)
-- [ ] 포인트 부족 거부 테스트 통과, 잔액 불변 확인 (5.2)
-- [ ] `진행중`이 아닌 이벤트 거부 테스트 통과 (5.1)
-- [ ] 잘못된 응모 횟수(0/음수/소수) 거부 테스트 통과 (5.3)
-- [ ] 동일 idempotencyKey 재요청 시 재차감 없음 테스트 통과, PointTransaction 1건만 존재 (5.8)
-- [ ] 동일 User-Event 동시 요청 2건 이상 병렬 호출 시 pointBalance가 음수가 되지 않고 성공 요청들의 (횟수×1,000) 합만큼만 감소한다 (5.9)
-- [ ] `npm test` 한 줄로 전체 테스트가 실행된다
+- [x] 정상 응모 + 누적 갱신 테스트 통과 (5.4)
+- [x] 포인트 부족 거부 테스트 통과, 잔액 불변 확인 (5.2)
+- [x] `진행중`이 아닌 이벤트 거부 테스트 통과 (5.1)
+- [x] 잘못된 응모 횟수(0/음수/소수) 거부 테스트 통과 (5.3)
+- [x] 동일 idempotencyKey 재요청 시 재차감 없음 테스트 통과, PointTransaction 1건만 존재 (5.8)
+- [x] 동일 User-Event 동시 요청 2건 이상 병렬 호출 시 pointBalance가 음수가 되지 않고 성공 요청들의 (횟수×1,000) 합만큼만 감소한다 (5.9)
+- [x] `npm test` 한 줄로 전체 테스트가 실행된다
 
 ### BE-9. 응모 내역 조회 API [UC-8 Must / UC-12 Should]
 
@@ -331,11 +331,11 @@ flowchart LR
 **관련 문서/규칙**: UC-8, UC-12, 시나리오 3.9-1 / 4.4-1, PRD 2장(KPI 산식 = SUM(totalCount))
 
 **완료 조건**
-- [ ] 내 응모 내역에 `종료` 상태 이벤트도 포함되어 조회된다
-- [ ] 응답에 이벤트별 totalCount/totalPointsUsed/lastAppliedAt이 포함된다
-- [ ] 다른 사용자의 응모 내역이 노출되지 않는다
-- [ ] 관리자 현황 API가 전체 응모 횟수(SUM)와 참여 사용자 수(row count) 2개 값을 반환한다
-- [ ] role=user의 관리자 현황 API 호출이 403으로 거부된다
+- [x] 내 응모 내역에 `종료` 상태 이벤트도 포함되어 조회된다
+- [x] 응답에 이벤트별 totalCount/totalPointsUsed/lastAppliedAt이 포함된다
+- [x] 다른 사용자의 응모 내역이 노출되지 않는다
+- [x] 관리자 현황 API가 전체 응모 횟수(SUM)와 참여 사용자 수(row count) 2개 값을 반환한다
+- [x] role=user의 관리자 현황 API 호출이 403으로 거부된다
 
 ---
 
@@ -520,3 +520,11 @@ flowchart LR
 | v1.3 | 2026-08-13 | DB-1 완료 처리: postgresql-mcp로 5개 테이블·제약조건 생성 및 검증(음수 잔액/기간 역전/중복 멱등키 INSERT 거부 확인), `backend/.env.example` 추가 후 완료 조건 체크박스 5개 모두 체크 |
 | v1.4 | 2026-08-13 | DB-2 완료 처리: `backend/seed.sql` 작성(pgcrypto bcrypt 해시, admin 1명·user 3명(800/2,000/5,500P)·이벤트 4건(예정1·진행중2·종료1)), postgresql-mcp로 2회 반복 실행해 재실행 안전성까지 검증 후 완료 조건 체크박스 4개 모두 체크 |
 | v1.5 | 2026-08-13 | BE-1 완료 처리: `backend/src/{config,db,middlewares,domain}` 및 `app.js`/`index.js`/`package.json` 구현, `backend/src/tests/be1-bootstrap.test.js`(15개 테스트, 라인 커버리지 96.55%) 작성·통과 확인 후 완료 조건 체크박스 5개 모두 체크 |
+| v1.6 | 2026-08-20 | BE-2 완료 처리: `backend/src/auth/{auth.router,auth.controller,auth.service,auth.queries}.js` 구현(회원가입/로그인/토큰 재발급/로그아웃, refresh token은 opaque 토큰 + sha256 해시 저장 방식), `domain/constants.js`·`domain/errors.js`에 토큰 만료 상수·ValidationError 추가, `app.js`에 `/api/auth` 라우터 등록. `backend/src/tests/{auth.service,auth.http}.test.js`(10개 테스트) 작성·전체 25개 테스트 통과 확인(auth 관련 파일 라인 커버리지 83~100%) 후 완료 조건 체크박스 5개 모두 체크 |
+| v1.7 | 2026-08-20 | BE-3 완료 처리: `backend/src/middlewares/auth.middleware.js`(authMiddleware, requireAdmin) 구현, `domain/errors.js`에 ForbiddenError(403) 추가. `backend/src/tests/auth.middleware.test.js`(8개 테스트: 헤더 없음/Bearer 형식오류/만료/위조/유효 토큰/일반유저 403/admin 200) 작성·전체 33개 테스트 통과 확인(auth.middleware.js 라인 커버리지 100%) 후 완료 조건 체크박스 3개 모두 체크 |
+| v1.8 | 2026-08-20 | BE-4 완료 처리: `backend/src/users/{users.router,users.controller,users.service,users.queries}.js` 구현(`GET /api/me`, authMiddleware로 보호, 항상 `req.user.id` 기준 조회), `app.js`에 `/api/me` 라우터 등록. `backend/src/tests/users.http.test.js`(2개 테스트: 비인증 401, 로그인 후 pointBalance 조회 확인) 작성·전체 35개 테스트 통과 확인(users 관련 파일 라인 커버리지 83~100%) 후 완료 조건 체크박스 3개 모두 체크 |
+| v1.9 | 2026-08-20 | BE-5 완료 처리: `backend/src/events/{events.router,events.controller,events.service,events.queries}.js` 구현(`GET /api/events` 진행중/예정만 반환, `GET /api/events/:id` 상세 조회 — 둘 다 authMiddleware로 보호), `app.js`에 `/api/events` 라우터 등록. `backend/src/tests/events.http.test.js`(4개 테스트: 비인증 401, 종료 제외/누락없음, null 필드 정상 응답, 존재하지 않는 id 404) 작성·전체 39개 테스트 통과 확인(events 관련 파일 라인 커버리지 84~100%) 후 완료 조건 체크박스 4개 모두 체크 |
+| v1.10 | 2026-08-20 | BE-6 완료 처리: `events.queries/service/controller/router.js`에 관리자 기능 추가(`GET /api/admin/events`, `POST /api/events`, `PUT /api/events/:id`, `PATCH /api/events/:id/status`, 모두 requireAdmin으로 보호), `admin-events.router.js` 신규 파일로 `/api/admin/events` 별도 마운트, `EVENT_STATUS_TRANSITIONS` 상수로 상태전이 규칙 재사용. `backend/src/tests/admin-events.http.test.js`(10개 테스트: 등록 성공/선택필드 생략/필수값 누락 400/기간역전 400/수정+404/정상 전이/건너뛰기 거부/역방향 거부/user 403/관리자 전체목록) 작성·전체 49개 테스트 통과 확인(events 관련 파일 라인 커버리지 91~100%) 후 완료 조건 체크박스 6개 모두 체크 |
+| v1.11 | 2026-08-20 | BE-7 완료 처리(★ 핵심 트랜잭션): `backend/src/applications/{applications.queries,applications.service,applications.controller}.js` 구현 — `POST /api/events/:id/applications`가 단일 pg 트랜잭션(BEGIN~COMMIT/ROLLBACK) 안에서 5.8 멱등성 체크 → 5.1 상태재확인 → 5.9 User row `FOR UPDATE` 잠금 → 5.3 횟수검증 → 5.2 잔액재확인 → 5.7 원자처리(차감+EventApplication UPSERT 누적(5.4)+PointTransaction INSERT(5.5))를 각 지점 `// 5.x` 주석과 함께 Service에만 판단 로직으로 구현, idempotency_key UNIQUE 위반(동시 경합) 시 롤백 후 기존 결과 재조회 반환하는 안전망 포함. `events.router.js`에 라우트 1줄만 추가. `backend/src/tests/applications.http.test.js`(13개 테스트: 정상응모/재응모누적/포인트부족/비진행중(예정·종료)/잘못된count 4종/멱등성/필수값누락/404, 테스트 전후 point_balance·event_applications·point_transactions 원복 확인) 작성·전체 59개 테스트 통과 확인(applications 관련 파일 라인 커버리지 89~100%) 후 완료 조건 체크박스 8개 모두 체크 |
+| v1.12 | 2026-08-20 | BE-8 완료 처리: `backend/src/tests/applications.service.test.js` 신규 작성 — `applications.service.js`의 `applyToEvent`를 HTTP 없이 직접 호출하는 6개 테스트(정상응모+누적, 포인트부족 거부+잔액불변, 비진행중 이벤트 거부, 잘못된 count 3종, 멱등성 재차감없음, **5.9 동시성**: 전용 테스트 유저 생성 후 잔액 3000에 count=2(2000P)짜리 요청 2건을 서로 다른 idempotencyKey로 `Promise.allSettled` 병렬 호출해 정확히 1건만 성공하고 최종 잔액이 음수 없이 1000으로 정확히 감소함을 검증). BE-7의 HTTP 테스트와 DB 상태 간섭을 피하기 위해 seed 유저 대신 파일 전용 테스트 유저를 생성·정리(cleanup)하는 방식 채택. 전체 65개 테스트 통과 확인(재실행으로 동시성 테스트 안정성 재검증, applications 관련 파일 라인 커버리지 89~100%) 후 완료 조건 체크박스 7개 모두 체크 |
+| v1.13 | 2026-08-20 | BE-9 완료 처리: `applications.queries/service/controller.js`에 조회 기능 추가(`findMyApplications`/`listMyApplications`, `getApplicationSummary` — 이벤트 존재확인은 `events.queries.findById` 재사용), `users.router.js`에 `GET /api/me/applications`, `events.router.js`에 `GET /api/events/:id/applications`(requireAdmin, 기존 POST와 메서드로만 구분) 라우트 추가. `backend/src/tests/applications-history.http.test.js`(6개 테스트: 본인 내역(종료 포함)/타유저 미노출/관리자 현황/응모0건/404/user 403) 신규 작성 중 seed 유저 공유로 인한 파일 간 병렬 테스트 경합(`users.http.test.js`가 다른 파일이 일시 변경한 point_balance를 읽어 flaky 실패)을 발견 — `package.json`의 test 스크립트에 `--test-concurrency=1` 추가해 파일을 직렬 실행하도록 수정. 전체 71개 테스트 통과(2회 재실행으로 안정성 확인, applications 관련 파일 라인 커버리지 91~100%) 후 완료 조건 체크박스 5개 모두 체크. **이로써 BE-1~BE-9 전 Task 완료.** |

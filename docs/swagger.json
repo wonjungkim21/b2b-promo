@@ -29,37 +29,13 @@
     "schemas": {
       "ErrorResponse": {
         "type": "object",
-        "description": "모든 API가 공통으로 사용하는 에러 응답 형식",
-        "required": ["error"],
+        "description": "모든 API가 공통으로 사용하는 에러 응답 형식. 실제 서버는 항상 message 필드만 포함한 평평한(flat) 형태로 응답한다(에러 코드는 내려주지 않는다).",
+        "required": ["message"],
         "properties": {
-          "error": {
-            "type": "object",
-            "required": ["code", "message"],
-            "properties": {
-              "code": {
-                "type": "string",
-                "description": "에러 코드",
-                "enum": [
-                  "VALIDATION_ERROR",
-                  "DUPLICATE_LOGIN_ID",
-                  "AUTHENTICATION_FAILED",
-                  "UNAUTHORIZED",
-                  "FORBIDDEN",
-                  "NOT_FOUND",
-                  "EVENT_NOT_ONGOING",
-                  "INSUFFICIENT_POINTS",
-                  "INVALID_APPLY_COUNT",
-                  "INVALID_STATUS_TRANSITION",
-                  "INTERNAL_SERVER_ERROR"
-                ],
-                "example": "INSUFFICIENT_POINTS"
-              },
-              "message": {
-                "type": "string",
-                "description": "사용자에게 보여줄 안내 메시지",
-                "example": "보유 포인트가 부족하여 응모할 수 없습니다."
-              }
-            }
+          "message": {
+            "type": "string",
+            "description": "사용자에게 보여줄 안내 메시지",
+            "example": "보유 포인트가 부족하여 응모할 수 없습니다."
           }
         }
       },
@@ -238,7 +214,7 @@
         "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
       },
       "Conflict": {
-        "description": "리소스 상태 충돌 (예: loginId 중복, 이벤트가 진행중이 아니어서 응모 거부(5.1), 잘못된 상태 전이)",
+        "description": "리소스 상태 충돌 (예: loginId 중복, 이벤트가 진행중이 아니어서 응모 거부(5.1))",
         "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
       }
     }
@@ -279,6 +255,7 @@
             "description": "로그인 성공, 토큰 발급",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/LoginResponse" } } }
           },
+          "400": { "$ref": "#/components/responses/BadRequest" },
           "401": { "$ref": "#/components/responses/Unauthorized" }
         }
       }
@@ -298,6 +275,7 @@
             "description": "재발급 성공",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/RefreshResponse" } } }
           },
+          "400": { "$ref": "#/components/responses/BadRequest" },
           "401": { "$ref": "#/components/responses/Unauthorized" }
         }
       }
@@ -314,6 +292,7 @@
         },
         "responses": {
           "204": { "description": "로그아웃 성공 (본문 없음)" },
+          "400": { "$ref": "#/components/responses/BadRequest" },
           "401": { "$ref": "#/components/responses/Unauthorized" }
         }
       }
@@ -400,6 +379,7 @@
             "description": "조회 성공",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Event" } } }
           },
+          "400": { "$ref": "#/components/responses/BadRequest" },
           "401": { "$ref": "#/components/responses/Unauthorized" },
           "404": { "$ref": "#/components/responses/NotFound" }
         }
@@ -431,7 +411,7 @@
       "patch": {
         "tags": ["events"],
         "summary": "이벤트 상태 변경 (관리자 전용)",
-        "description": "UC-11 이벤트 상태(예정/진행중/종료)를 변경한다. 관리자 전용. 상태 전이는 예정→진행중→종료 순서만 허용하며, 역방향 전이(예: 진행중→예정)와 단계 건너뛰기(예: 예정→종료)는 409로 거부한다.",
+        "description": "UC-11 이벤트 상태(예정/진행중/종료)를 변경한다. 관리자 전용. 상태 전이는 예정→진행중→종료 순서만 허용하며, 역방향 전이(예: 진행중→예정)와 단계 건너뛰기(예: 예정→종료)는 400으로 거부한다.",
         "parameters": [
           { "name": "id", "in": "path", "required": true, "schema": { "type": "integer", "format": "int64" }, "description": "이벤트 ID" }
         ],
@@ -444,11 +424,13 @@
             "description": "상태 변경 성공",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Event" } } }
           },
-          "400": { "$ref": "#/components/responses/BadRequest" },
+          "400": {
+            "description": "요청 값이 유효하지 않음 (id가 숫자가 아님, status 값이 올바르지 않음, 또는 허용되지 않는 상태 전이)",
+            "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
+          },
           "401": { "$ref": "#/components/responses/Unauthorized" },
           "403": { "$ref": "#/components/responses/Forbidden" },
-          "404": { "$ref": "#/components/responses/NotFound" },
-          "409": { "$ref": "#/components/responses/Conflict" }
+          "404": { "$ref": "#/components/responses/NotFound" }
         }
       }
     },
@@ -456,7 +438,7 @@
       "post": {
         "tags": ["applications"],
         "summary": "응모 확정 (포인트 차감 + EventApplication 갱신)",
-        "description": "UC-7 응모를 확정하여 포인트를 차감하고 EventApplication을 갱신한다 (관련 규칙: 5.1, 5.2, 5.3, 5.4, 5.7, 5.8, 5.9). 요청 전 UC-5(최대 응모 가능 횟수 확인)와 UC-6(응모 횟수 선택 및 미리보기)를 통해 클라이언트가 참고용 계산을 미리 보여줄 수 있으나, 최종 검증은 항상 이 API가 수행한다.\n\n- 원자성(5.7): pointBalance 차감, PointTransaction 생성, EventApplication의 totalCount/totalPointsUsed 누적 갱신은 하나의 트랜잭션으로 처리되며 부분 실패가 없다.\n- 멱등성(5.8): idempotencyKey는 유일값 제약을 가진다. 동일 idempotencyKey로 재요청(중복 클릭, 네트워크 재시도 등)이 들어오면 포인트를 재차감하지 않고 이전 처리 결과를 그대로 반환한다.\n- 동시성(5.9): 동일 User-Event 조합에 대한 동시 요청은 DB row lock 등으로 직렬화되어, 순차 처리와 동일한 최종 결과를 보장하며 pointBalance는 어떤 경우에도 음수가 되지 않는다.\n\n실패 케이스: 이벤트가 진행중이 아니면(5.1) 409, 보유 포인트 부족이면(5.2) 409, 응모 횟수가 1 이상 정수가 아니면(5.3) 400으로 거부되며 두 경우 모두 포인트 차감이 발생하지 않는다.",
+        "description": "UC-7 응모를 확정하여 포인트를 차감하고 EventApplication을 갱신한다 (관련 규칙: 5.1, 5.2, 5.3, 5.4, 5.7, 5.8, 5.9). 요청 전 UC-5(최대 응모 가능 횟수 확인)와 UC-6(응모 횟수 선택 및 미리보기)를 통해 클라이언트가 참고용 계산을 미리 보여줄 수 있으나, 최종 검증은 항상 이 API가 수행한다.\n\n- 원자성(5.7): pointBalance 차감, PointTransaction 생성, EventApplication의 totalCount/totalPointsUsed 누적 갱신은 하나의 트랜잭션으로 처리되며 부분 실패가 없다.\n- 멱등성(5.8): idempotencyKey는 유일값 제약을 가진다. 동일 idempotencyKey로 재요청(중복 클릭, 네트워크 재시도 등)이 들어오면 포인트를 재차감하지 않고 이전 처리 결과를 그대로 반환한다.\n- 동시성(5.9): 동일 User-Event 조합에 대한 동시 요청은 DB row lock 등으로 직렬화되어, 순차 처리와 동일한 최종 결과를 보장하며 pointBalance는 어떤 경우에도 음수가 되지 않는다.\n\n실패 케이스: 이벤트가 진행중이 아니면(5.1) 409, 보유 포인트 부족이면(5.2) 400, 응모 횟수가 1 이상 정수가 아니면(5.3) 400으로 거부되며 모든 경우 포인트 차감이 발생하지 않는다.",
         "parameters": [
           { "name": "id", "in": "path", "required": true, "schema": { "type": "integer", "format": "int64" }, "description": "응모 대상 이벤트 ID" }
         ],
@@ -470,13 +452,13 @@
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApplyResponse" } } }
           },
           "400": {
-            "description": "응모 횟수가 1 이상 정수가 아님 (5.3)",
+            "description": "요청 값이 유효하지 않음 (id가 숫자가 아님, 응모 횟수가 1 이상 정수가 아님(5.3), 또는 보유 포인트 부족(5.2)). 포인트 차감은 발생하지 않는다.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
           },
           "401": { "$ref": "#/components/responses/Unauthorized" },
           "404": { "$ref": "#/components/responses/NotFound" },
           "409": {
-            "description": "이벤트가 진행중이 아님(5.1) 또는 보유 포인트 부족(5.2)으로 응모가 거부됨. 포인트 차감은 발생하지 않는다.",
+            "description": "이벤트가 진행중이 아님(5.1)으로 응모가 거부됨. 포인트 차감은 발생하지 않는다.",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ErrorResponse" } } }
           }
         }
@@ -493,6 +475,7 @@
             "description": "조회 성공",
             "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ApplicationSummaryResponse" } } }
           },
+          "400": { "$ref": "#/components/responses/BadRequest" },
           "401": { "$ref": "#/components/responses/Unauthorized" },
           "403": { "$ref": "#/components/responses/Forbidden" },
           "404": { "$ref": "#/components/responses/NotFound" }

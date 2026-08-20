@@ -48,6 +48,18 @@ class DuplicateLoginIdError extends DomainError {
   }
 }
 
+class ValidationError extends DomainError {
+  constructor(message) {
+    super(message, 400);
+  }
+}
+
+class ForbiddenError extends DomainError {
+  constructor(message) {
+    super(message || '접근 권한이 없습니다.', 403);
+  }
+}
+
 module.exports = {
   DomainError,
   EventNotOngoingError,
@@ -57,4 +69,6 @@ module.exports = {
   NotFoundError,
   UnauthorizedError,
   DuplicateLoginIdError,
+  ValidationError,
+  ForbiddenError,
 };

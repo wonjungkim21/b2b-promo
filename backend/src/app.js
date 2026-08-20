@@ -20,6 +20,17 @@ app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok' });
 });
 
+if (process.env.NODE_ENV !== 'production') {
+  const swaggerUi = require('swagger-ui-express');
+  const swaggerDocument = require('../../docs/swagger.json');
+  app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+}
+
+app.use('/api/auth', require('./auth/auth.router'));
+app.use('/api/me', require('./users/users.router'));
+app.use('/api/events', require('./events/events.router'));
+app.use('/api/admin/events', require('./events/admin-events.router'));
+
 app.use(errorMiddleware);
 
 module.exports = app;
