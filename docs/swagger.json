@@ -224,7 +224,7 @@
       "post": {
         "tags": ["auth"],
         "summary": "회원가입",
-        "description": "UC-0 회원가입. name, loginId, password를 입력받아 role=user로 계정을 생성한다. loginId는 유일해야 하며 중복 시 409로 거부한다. pointBalance 초기값 부여 정책은 MVP 범위 밖이며 시딩 데이터로 이미 채워진 것으로 가정한다.",
+        "description": "UC-0 회원가입. name, loginId, password를 입력받아 role=user로 계정을 생성하고 pointBalance 초기값 5,000을 지급한다. loginId는 유일해야 하며 중복 시 409로 거부한다.",
         "security": [],
         "requestBody": {
           "required": true,

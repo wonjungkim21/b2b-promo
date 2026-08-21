@@ -35,3 +35,4 @@ postgresql://postgres.fcwlfjpwnlicjtbkomug:Sdnjswnd21!@aws-0-ap-northeast-2.pool
  ##fallbcdk UI 설정
 
  프론트엔드 앱을 vercel에 배포하고 있어. fallback ui 설정을 vercel.json에 설정해줘
+

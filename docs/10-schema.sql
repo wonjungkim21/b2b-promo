@@ -1,6 +1,6 @@
 -- freshmeal-point-event DDL (PostgreSQL 17)
--- 버전: v1.0 (2026-08-13)
--- 기반 문서: docs/9-erd.md v1.1 (docs/2-domain-definition.md v1.5, docs/4-PRD.md v1.4)
+-- 버전: v1.1 (2026-08-21)
+-- 기반 문서: docs/9-erd.md v1.4 (docs/2-domain-definition.md v1.6, docs/4-PRD.md v1.5)
 -- ORM 미사용, pg 드라이버로 직접 실행하는 것을 전제로 작성 (docs/6-project-principle.md)
 
 BEGIN;
@@ -14,7 +14,8 @@ CREATE TABLE users (
     login_id      VARCHAR(255) NOT NULL,
     password_hash VARCHAR(255) NOT NULL,
     role          VARCHAR(10)  NOT NULL,
-    point_balance BIGINT       NOT NULL DEFAULT 0,
+    -- 도메인 3.1: 회원가입 시 pointBalance 초기값으로 5,000을 지급한다.
+    point_balance BIGINT       NOT NULL DEFAULT 5000,
     created_at    TIMESTAMPTZ  NOT NULL DEFAULT now(),
 
     CONSTRAINT uq_users_login_id UNIQUE (login_id),

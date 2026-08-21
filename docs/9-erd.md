@@ -1,7 +1,7 @@
 # 프레시밀 포인트 이벤트 응모(freshmeal-point-event) ERD
 
-버전: v1.3 (2026-08-20)
-기반 문서: `docs/2-domain-definition.md` v1.5, `docs/4-PRD.md` v1.4, `docs/6-project-principle.md` v1.4
+버전: v1.4 (2026-08-21)
+기반 문서: `docs/2-domain-definition.md` v1.6, `docs/4-PRD.md` v1.5, `docs/6-project-principle.md` v1.4
 
 ## 1. 다이어그램
 
@@ -68,7 +68,7 @@ erDiagram
 ## 2. 테이블 설명
 
 ### 2.1 users
-- name(표시 이름), login_id(유일), role(user/admin), point_balance(보유 포인트).
+- name(표시 이름), login_id(유일), role(user/admin), point_balance(보유 포인트, 회원가입 시 초기값 5,000 지급).
 - `point_balance >= 0` 불변식을 CHECK 제약으로 강제한다 (도메인 5.2).
 - 도메인 3.1 대응.
 
@@ -105,3 +105,4 @@ erDiagram
 | v1.1 | 2026-08-13 | docs 전체 정합성 재검토 반영: 기반 문서 라벨을 PRD v1.4, 구조 설계 원칙 v1.2로 정정 |
 | v1.2 | 2026-08-20 | BE-1~BE-9 실제 구현 반영 정합성 재검토: 실제 DB 스키마는 이번 백엔드 개발 기간 동안 변경되지 않아 ERD 내용은 그대로이며, 기반 문서 라벨만 구조 설계 원칙 v1.3으로 정정 |
 | v1.3 | 2026-08-20 | FE-1~FE-9 완료 이후 정합성 재검토: 프론트엔드 UI 변경은 DB 스키마에 영향이 없어 ERD 내용은 그대로이며, 기반 문서 라벨만 구조 설계 원칙 v1.4로 정정 |
+| v1.4 | 2026-08-21 | 도메인 정의서 v1.6 반영: users.point_balance 기본값을 회원가입 초기 지급 포인트 5,000으로 변경, 기반 문서 라벨 갱신 |

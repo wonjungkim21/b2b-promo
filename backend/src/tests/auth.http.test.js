@@ -84,6 +84,22 @@ test('인증 API 전체 흐름: signup -> login -> refresh -> logout -> refresh 
   assert.equal(retryRefreshRes.status, 401);
 });
 
+test('signup: 신규 가입자는 pointBalance 초기값 5000을 지급받는다', async () => {
+  const loginId = uniqueLoginId();
+  createdLoginIds.push(loginId);
+  const password = 'password123';
+
+  const signupRes = await fetch(`${baseUrl}/api/auth/signup`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: '포인트초기값테스트', loginId, password }),
+  });
+  assert.equal(signupRes.status, 201);
+
+  const { rows } = await pool.query('SELECT point_balance FROM users WHERE login_id = $1', [loginId]);
+  assert.equal(Number(rows[0].point_balance), 5000);
+});
+
 test('signup: 필수값(password) 누락 시 400을 반환한다', async () => {
   const loginId = uniqueLoginId();
 
