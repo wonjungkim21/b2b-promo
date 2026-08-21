@@ -8,9 +8,9 @@ npx serve dist -p 5173 -s
 
 ## 수파베이스 DB 설정
 
-Sdnjswnd21!
+수파베이스원중번호!
 
-postgresql://postgres.fcwlfjpwnlicjtbkomug:Sdnjswnd21!@aws-0-ap-northeast-2.pooler.supabase.com:6543/postgres
+postgresql://postgres.fcwlfjpwnlicjtbkomug:[비밀번호]]!@aws-0-ap-northeast-2.pooler.supabase.com:6543/postgres
 
 #수파베이스 연결
 /mcp
