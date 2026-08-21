@@ -31,3 +31,7 @@ postgresql://postgres.fcwlfjpwnlicjtbkomug:Sdnjswnd21!@aws-0-ap-northeast-2.pool
 
 ## 백엔드 배포후 적용 잘되었는지 테스트
  ❯ https://honghak-123-be.vercel.app 에 백엔드를 배포했어. 배포된 백엔드에 대해 사용자 시나리오를 적용해 E2E 테스트를 수행해줘
+
+ ##fallbcdk UI 설정
+
+ 프론트엔드 앱을 vercel에 배포하고 있어. fallback ui 설정을 vercel.json에 설정해줘
