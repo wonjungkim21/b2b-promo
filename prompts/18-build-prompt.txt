@@ -1,0 +1,33 @@
+## 프론트 서버 배포
+
+npm run build
+
+
+## fallback ui 설정임
+npx serve dist -p 5173 -s
+
+## 수파베이스 DB 설정
+
+Sdnjswnd21!
+
+postgresql://postgres.fcwlfjpwnlicjtbkomug:Sdnjswnd21!@aws-0-ap-northeast-2.pooler.supabase.com:6543/postgres
+
+#수파베이스 연결
+/mcp
+
+#백엔드 운영 env 생성
+#운영 정보 git에 등록 안되게끔 작업함
+.gitignore에 .env.production 파일은 버전 제어 대상에서 제외되도록 설정해줘
+
+
+#MCP 활용한 수파베이스 DB 스키마 생성
+ postgresql mcp 도구와 .env.production의 연결정보를 활용해 운영DB에 연결 여부를 확인하고 스키마를 생성해줘
+
+ ## hostname 설정
+ env 파일에 각각 설정해줘야함 
+
+ https://honghak-123-fe.vercel.app
+ https://honghak-123-be.vercel.app
+
+## 백엔드 배포후 적용 잘되었는지 테스트
+ ❯ https://honghak-123-be.vercel.app 에 백엔드를 배포했어. 배포된 백엔드에 대해 사용자 시나리오를 적용해 E2E 테스트를 수행해줘

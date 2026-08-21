@@ -1,0 +1,413 @@
+[
+  {
+    "scenario": "3.1-1",
+    "desc": "signup normal",
+    "http": 409,
+    "body": {
+      "message": "이미 사용중인 로그인 아이디입니다: prod-e2e-01@test.com"
+    }
+  },
+  {
+    "scenario": "3.1-2",
+    "desc": "signup duplicate loginId",
+    "http": 409,
+    "body": {
+      "message": "이미 사용중인 로그인 아이디입니다: prod-e2e-01@test.com"
+    }
+  },
+  {
+    "scenario": "3.2-2",
+    "desc": "login wrong password",
+    "http": 401,
+    "body": {
+      "message": "아이디 또는 비밀번호가 올바르지 않습니다."
+    }
+  },
+  {
+    "scenario": "3.2-1a",
+    "desc": "login admin",
+    "http": 200,
+    "body": {
+      "accessToken": "<redacted>",
+      "refreshToken": "<redacted>",
+      "user": {
+        "id": "1",
+        "name": "관리자",
+        "role": "admin"
+      }
+    }
+  },
+  {
+    "scenario": "3.2-1b",
+    "desc": "login user-low",
+    "http": 200,
+    "body": {
+      "accessToken": "<redacted>",
+      "refreshToken": "<redacted>",
+      "user": {
+        "id": "2",
+        "name": "김부족",
+        "role": "user"
+      }
+    }
+  },
+  {
+    "scenario": "3.2-1c",
+    "desc": "login user-mid",
+    "http": 200,
+    "body": {
+      "accessToken": "<redacted>",
+      "refreshToken": "<redacted>",
+      "user": {
+        "id": "3",
+        "name": "이보통",
+        "role": "user"
+      }
+    }
+  },
+  {
+    "scenario": "3.2-1d",
+    "desc": "login user-high",
+    "http": 200,
+    "body": {
+      "accessToken": "<redacted>",
+      "refreshToken": "<redacted>",
+      "user": {
+        "id": "4",
+        "name": "박풍족",
+        "role": "user"
+      }
+    }
+  },
+  {
+    "scenario": "3.3-1",
+    "desc": "event list only ongoing/scheduled",
+    "http": 200,
+    "body": [
+      {
+        "id": "1",
+        "title": "여름 특가 이벤트",
+        "imageUrl": null,
+        "startAt": "2026-08-16T04:08:17.219Z",
+        "endAt": "2026-08-31T04:08:17.219Z",
+        "prizeDescription": "스타벅스 기프티콘",
+        "status": "진행중"
+      },
+      {
+        "id": "2",
+        "title": "재구매 포인트 2배",
+        "imageUrl": null,
+        "startAt": "2026-08-20T04:08:17.219Z",
+        "endAt": "2026-08-26T04:08:17.219Z",
+        "prizeDescription": null,
+        "status": "진행중"
+      },
+      {
+        "id": "3",
+        "title": "가을 신메뉴 이벤트",
+        "imageUrl": null,
+        "startAt": "2026-08-31T04:08:17.219Z",
+        "endAt": "2026-09-10T04:08:17.219Z",
+        "prizeDescription": "신메뉴 시식권",
+        "status": "예정"
+      }
+    ]
+  },
+  {
+    "scenario": "3.4-1",
+    "desc": "event detail #1",
+    "http": 200,
+    "body": {
+      "id": "1",
+      "title": "여름 특가 이벤트",
+      "imageUrl": null,
+      "startAt": "2026-08-16T04:08:17.219Z",
+      "endAt": "2026-08-31T04:08:17.219Z",
+      "prizeDescription": "스타벅스 기프티콘",
+      "status": "진행중"
+    }
+  },
+  {
+    "scenario": "3.5-1a",
+    "desc": "me low",
+    "http": 200,
+    "body": {
+      "id": "2",
+      "name": "김부족",
+      "role": "user",
+      "pointBalance": 800
+    }
+  },
+  {
+    "scenario": "3.5-1b",
+    "desc": "me mid",
+    "http": 200,
+    "body": {
+      "id": "3",
+      "name": "이보통",
+      "role": "user",
+      "pointBalance": 2000
+    }
+  },
+  {
+    "scenario": "3.5-1c",
+    "desc": "me high",
+    "http": 200,
+    "body": {
+      "id": "4",
+      "name": "박풍족",
+      "role": "user",
+      "pointBalance": 2500
+    }
+  },
+  {
+    "scenario": "3.7-2a",
+    "desc": "apply count 0",
+    "http": 400,
+    "body": {
+      "message": "응모 수량이 올바르지 않습니다: 0"
+    }
+  },
+  {
+    "scenario": "3.7-2b",
+    "desc": "apply count -1",
+    "http": 400,
+    "body": {
+      "message": "응모 수량이 올바르지 않습니다: -1"
+    }
+  },
+  {
+    "scenario": "3.7-2c",
+    "desc": "apply count 1.5",
+    "http": 400,
+    "body": {
+      "message": "응모 수량이 올바르지 않습니다: 1.5"
+    }
+  },
+  {
+    "scenario": "3.8-1",
+    "desc": "apply success count2",
+    "http": 200,
+    "body": {
+      "eventId": "1",
+      "pointBalance": 2500,
+      "totalCount": 3,
+      "totalPointsUsed": 3000,
+      "lastAppliedAt": "2026-08-21T04:10:48.844Z"
+    }
+  },
+  {
+    "scenario": "3.8-4",
+    "desc": "apply accumulate count1",
+    "http": 200,
+    "body": {
+      "eventId": "1",
+      "pointBalance": 2500,
+      "totalCount": 3,
+      "totalPointsUsed": 3000,
+      "lastAppliedAt": "2026-08-21T04:10:48.844Z"
+    }
+  },
+  {
+    "scenario": "3.8-5",
+    "desc": "idempotent retry same key",
+    "http": 200,
+    "body": {
+      "eventId": "1",
+      "pointBalance": 2500,
+      "totalCount": 3,
+      "totalPointsUsed": 3000,
+      "lastAppliedAt": "2026-08-21T04:10:48.844Z"
+    }
+  },
+  {
+    "scenario": "3.8-2",
+    "desc": "insufficient points (user-low)",
+    "http": 400,
+    "body": {
+      "message": "포인트가 부족합니다. 필요 포인트: 1000, 보유 포인트: 800"
+    }
+  },
+  {
+    "scenario": "3.9-1",
+    "desc": "my applications (user-high)",
+    "http": 200,
+    "body": [
+      {
+        "eventId": "1",
+        "eventTitle": "여름 특가 이벤트",
+        "eventStatus": "진행중",
+        "totalCount": 3,
+        "totalPointsUsed": 3000,
+        "lastAppliedAt": "2026-08-21T04:10:48.844Z"
+      }
+    ]
+  },
+  {
+    "scenario": "4.1-2",
+    "desc": "create event invalid period",
+    "http": 400,
+    "body": {
+      "message": "종료일시는 시작일시보다 이후여야 합니다."
+    }
+  },
+  {
+    "scenario": "4.1-1",
+    "desc": "create event normal",
+    "http": 201,
+    "body": {
+      "id": "6",
+      "title": "E2E Prod Event",
+      "imageUrl": null,
+      "startAt": "2027-09-01T00:00:00.000Z",
+      "endAt": "2027-09-10T00:00:00.000Z",
+      "prizeDescription": null,
+      "status": "예정"
+    }
+  },
+  {
+    "scenario": "4.2-2",
+    "desc": "update event invalid period",
+    "http": 400,
+    "body": {
+      "message": "종료일시는 시작일시보다 이후여야 합니다."
+    }
+  },
+  {
+    "scenario": "4.2-1",
+    "desc": "update event normal",
+    "http": 200,
+    "body": {
+      "id": "6",
+      "title": "E2E Prod Event Updated",
+      "imageUrl": null,
+      "startAt": "2027-09-01T00:00:00.000Z",
+      "endAt": "2027-09-10T00:00:00.000Z",
+      "prizeDescription": null,
+      "status": "예정"
+    }
+  },
+  {
+    "scenario": "4.3-1",
+    "desc": "scheduled to ongoing",
+    "http": 200,
+    "body": {
+      "id": "6",
+      "title": "E2E Prod Event Updated",
+      "imageUrl": null,
+      "startAt": "2027-09-01T00:00:00.000Z",
+      "endAt": "2027-09-10T00:00:00.000Z",
+      "prizeDescription": null,
+      "status": "진행중"
+    }
+  },
+  {
+    "scenario": "4.3-3",
+    "desc": "backward ongoing to scheduled (reject)",
+    "http": 400,
+    "body": {
+      "message": "상태를 진행중에서 예정(으)로 변경할 수 없습니다."
+    }
+  },
+  {
+    "scenario": "4.3-2",
+    "desc": "ongoing to ended",
+    "http": 200,
+    "body": {
+      "id": "6",
+      "title": "E2E Prod Event Updated",
+      "imageUrl": null,
+      "startAt": "2027-09-01T00:00:00.000Z",
+      "endAt": "2027-09-10T00:00:00.000Z",
+      "prizeDescription": null,
+      "status": "종료"
+    }
+  },
+  {
+    "scenario": "4.3-4",
+    "desc": "skip scheduled to ended (reject, event3)",
+    "http": 400,
+    "body": {
+      "message": "상태를 예정에서 종료(으)로 변경할 수 없습니다."
+    }
+  },
+  {
+    "scenario": "3.8-3",
+    "desc": "apply to ended event",
+    "http": 409,
+    "body": {
+      "message": "이벤트(6)가 진행중 상태가 아닙니다."
+    }
+  },
+  {
+    "scenario": "4.4-1",
+    "desc": "event1 application stats",
+    "http": 200,
+    "body": {
+      "eventId": 1,
+      "totalApplyCount": 3,
+      "participantCount": 1
+    }
+  },
+  {
+    "scenario": "admin-list",
+    "desc": "admin event list",
+    "http": 200,
+    "body": [
+      {
+        "id": "4",
+        "title": "봄맞이 이벤트",
+        "imageUrl": null,
+        "startAt": "2026-06-22T04:08:17.219Z",
+        "endAt": "2026-07-22T04:08:17.219Z",
+        "prizeDescription": "봄맞이 할인쿠폰",
+        "status": "종료"
+      },
+      {
+        "id": "1",
+        "title": "여름 특가 이벤트",
+        "imageUrl": null,
+        "startAt": "2026-08-16T04:08:17.219Z",
+        "endAt": "2026-08-31T04:08:17.219Z",
+        "prizeDescription": "스타벅스 기프티콘",
+        "status": "진행중"
+      },
+      {
+        "id": "2",
+        "title": "재구매 포인트 2배",
+        "imageUrl": null,
+        "startAt": "2026-08-20T04:08:17.219Z",
+        "endAt": "2026-08-26T04:08:17.219Z",
+        "prizeDescription": null,
+        "status": "진행중"
+      },
+      {
+        "id": "3",
+        "title": "가을 신메뉴 이벤트",
+        "imageUrl": null,
+        "startAt": "2026-08-31T04:08:17.219Z",
+        "endAt": "2026-09-10T04:08:17.219Z",
+        "prizeDescription": "신메뉴 시식권",
+        "status": "예정"
+      },
+      {
+        "id": "5",
+        "title": "E2E Prod Event Updated",
+        "imageUrl": null,
+        "startAt": "2027-09-01T00:00:00.000Z",
+        "endAt": "2027-09-10T00:00:00.000Z",
+        "prizeDescription": null,
+        "status": "종료"
+      },
+      {
+        "id": "6",
+        "title": "E2E Prod Event Updated",
+        "imageUrl": null,
+        "startAt": "2027-09-01T00:00:00.000Z",
+        "endAt": "2027-09-10T00:00:00.000Z",
+        "prizeDescription": null,
+        "status": "종료"
+      }
+    ]
+  }
+]
