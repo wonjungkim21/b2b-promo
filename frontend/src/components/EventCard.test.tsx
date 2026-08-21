@@ -8,7 +8,7 @@ describe('EventCard', () => {
     render(
       <MemoryRouter>
         <EventCard
-          id="event-1"
+          id={1}
           title="여름 특가 이벤트"
           startAt="2026-07-01T00:00:00Z"
           endAt="2026-08-31T00:00:00Z"
@@ -21,9 +21,6 @@ describe('EventCard', () => {
     expect(screen.getByText('진행중')).toBeInTheDocument();
     expect(screen.getByText(/07\.0[12]/)).toBeInTheDocument();
     expect(screen.getByText(/08\.3[01]/)).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: '상세보기' })).toHaveAttribute(
-      'href',
-      '/events/event-1',
-    );
+    expect(screen.getByRole('link', { name: '상세보기' })).toHaveAttribute('href', '/events/1');
   });
 });

@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom';
 import EventStatusBadge, { type EventStatus } from './EventStatusBadge';
 
 interface EventCardProps {
-  id: string;
+  id: number;
   title: string;
   startAt: string;
   endAt: string;
