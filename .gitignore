@@ -30,3 +30,6 @@ pnpm-debug.log*
 
 # misc
 *.local
+
+# playwright mcp local trace/log output
+.playwright-mcp/
