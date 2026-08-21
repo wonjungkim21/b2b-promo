@@ -1,0 +1,10 @@
+ 현재 백엔드에 Swagger UI를 적용해줘
+
+ 운영환경에서는 사용할수 없게 업데이트해줘
+
+ ❯ 실제 구현된 백엔드 API 기반으로 @..\docs\swagger.json 파일을 비교하여 불일치한 부분을 업데이트 해둬
+
+ ## //"name": "김원중",//
+ ## //"loginId": "kim@example.com",
+ ## //"password": "asd1234"//
+}

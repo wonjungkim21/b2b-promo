@@ -1,0 +1,1 @@
+ @.claude/fronted/CLAUDE.md 에 프론트엔드 앱 개발을 위해 참조해야하는 문서들의 목록을 생성해줘

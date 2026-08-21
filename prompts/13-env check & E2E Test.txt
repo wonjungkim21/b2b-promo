@@ -1,0 +1,1 @@
+ @..\docs\5-user-scenario.md 사용자 시나리오 정보를 이용해 백엔드API에 대한 E2E 테스트를 수행해줘
