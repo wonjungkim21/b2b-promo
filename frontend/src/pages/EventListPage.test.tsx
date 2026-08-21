@@ -94,7 +94,7 @@ describe('EventListPage', () => {
 
     renderPage();
 
-    const link = await screen.findByRole('link', { name: /여름 특가/ });
+    const link = await screen.findByRole('link', { name: '상세보기' });
     expect(link).toHaveAttribute('href', '/events/1');
   });
 

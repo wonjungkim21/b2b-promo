@@ -59,8 +59,10 @@ describe('AdminEventStatsPage', () => {
   it('응모 현황 지표가 표시된다', async () => {
     renderPage();
 
-    expect(await screen.findByText('전체 응모 횟수: 128회')).toBeInTheDocument();
-    expect(screen.getByText('참여 사용자 수: 64명')).toBeInTheDocument();
+    expect(await screen.findByText('전체 응모 횟수')).toBeInTheDocument();
+    expect(screen.getByText('128회')).toBeInTheDocument();
+    expect(screen.getByText('참여 사용자 수')).toBeInTheDocument();
+    expect(screen.getByText('64명')).toBeInTheDocument();
   });
 
   it('응모가 0건이면 0회/0명으로 표시된다', async () => {
@@ -78,14 +80,14 @@ describe('AdminEventStatsPage', () => {
 
     renderPage();
 
-    expect(await screen.findByText('전체 응모 횟수: 0회')).toBeInTheDocument();
-    expect(screen.getByText('참여 사용자 수: 0명')).toBeInTheDocument();
+    expect(await screen.findByText('0회')).toBeInTheDocument();
+    expect(screen.getByText('0명')).toBeInTheDocument();
   });
 
   it('이벤트 제목이 헤더에 표시된다', async () => {
     renderPage();
 
-    expect(await screen.findByText('여름 특가 이벤트 - 응모 현황')).toBeInTheDocument();
+    expect(await screen.findByText('여름 특가 이벤트')).toBeInTheDocument();
   });
 
   it('뒤로 버튼을 클릭하면 /admin으로 이동한다', async () => {

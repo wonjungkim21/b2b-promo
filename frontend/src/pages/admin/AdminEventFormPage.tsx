@@ -75,57 +75,63 @@ function AdminEventFormPage() {
     <div>
       <AppHeader />
       <div className="page-container">
-      <TopNav backTo="/admin" />
-      <h1>{isEdit ? '이벤트 수정' : '이벤트 등록'}</h1>
-      <form onSubmit={handleSubmit}>
-        <label>
-          이벤트명 *
-          <input value={title} onChange={(e) => setTitle(e.target.value)} />
-        </label>
-        <label>
-          이미지 URL(선택)
-          <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
-        </label>
-        <label>
-          시작일시 *
-          <input type="datetime-local" value={startAt} onChange={(e) => setStartAt(e.target.value)} />
-        </label>
-        <label>
-          종료일시 *
-          <input type="datetime-local" value={endAt} onChange={(e) => setEndAt(e.target.value)} />
-        </label>
-        {!isEdit && (
-          <fieldset>
-            <legend>상태 *</legend>
-            {(['예정', '진행중', '종료'] as const).map((s) => (
-              <label key={s}>
-                <input
-                  type="radio"
-                  name="status"
-                  value={s}
-                  checked={status === s}
-                  onChange={() => setStatus(s)}
-                />
-                {s}
-              </label>
-            ))}
-          </fieldset>
-        )}
-        <label>
-          경품/혜택(선택)
-          <input value={prizeDescription} onChange={(e) => setPrizeDescription(e.target.value)} />
-        </label>
+        <TopNav backTo="/admin" />
+        <h1>{isEdit ? '이벤트 수정' : '이벤트 등록'}</h1>
+        <section className="event-section">
+          <form className="admin-form" onSubmit={handleSubmit}>
+            <label className="admin-form-field">
+              이벤트명 *
+              <input value={title} onChange={(e) => setTitle(e.target.value)} />
+            </label>
+            <label className="admin-form-field">
+              이미지 URL(선택)
+              <input value={imageUrl} onChange={(e) => setImageUrl(e.target.value)} />
+            </label>
+            <label className="admin-form-field">
+              시작일시 *
+              <input type="datetime-local" value={startAt} onChange={(e) => setStartAt(e.target.value)} />
+            </label>
+            <label className="admin-form-field">
+              종료일시 *
+              <input type="datetime-local" value={endAt} onChange={(e) => setEndAt(e.target.value)} />
+            </label>
+            {!isEdit && (
+              <fieldset className="admin-form-radio-group">
+                <legend>상태 *</legend>
+                <div className="admin-form-radio-options">
+                  {(['예정', '진행중', '종료'] as const).map((s) => (
+                    <label key={s}>
+                      <input
+                        type="radio"
+                        name="status"
+                        value={s}
+                        checked={status === s}
+                        onChange={() => setStatus(s)}
+                      />
+                      {s}
+                    </label>
+                  ))}
+                </div>
+              </fieldset>
+            )}
+            <label className="admin-form-field">
+              경품/혜택(선택)
+              <input value={prizeDescription} onChange={(e) => setPrizeDescription(e.target.value)} />
+            </label>
 
-        {validationError && <div>{validationError}</div>}
-        {mutation.isError && <div>{mutation.error.message}</div>}
+            {validationError && <div className="event-section-notice">{validationError}</div>}
+            {mutation.isError && <div className="event-section-notice">{mutation.error.message}</div>}
 
-        <button type="button" onClick={() => navigate('/admin')}>
-          취소
-        </button>
-        <button type="submit" disabled={mutation.isPending}>
-          저장
-        </button>
-      </form>
+            <div className="admin-form-actions">
+              <button type="button" className="admin-action-button-outline" onClick={() => navigate('/admin')}>
+                취소
+              </button>
+              <button type="submit" className="admin-action-button" disabled={mutation.isPending}>
+                저장
+              </button>
+            </div>
+          </form>
+        </section>
       </div>
     </div>
   );

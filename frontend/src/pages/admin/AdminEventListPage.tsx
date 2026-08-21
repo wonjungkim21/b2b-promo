@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import EventStatusBadge, { type EventStatus } from '../../components/EventStatusBadge';
-import TopNav from '../../components/TopNav';
 import AppHeader from '../../components/AppHeader';
 import { useAdminEvents } from '../../features/adminEvents/useAdminEvents';
 import { useUpdateEventStatus } from '../../features/adminEvents/useUpdateEventStatus';
@@ -27,10 +26,11 @@ function AdminEventListPage() {
     <div>
       <AppHeader />
       <div className="page-container">
-        <TopNav />
-        <header>
+        <header className="admin-header">
           <h1>이벤트 관리</h1>
-          <Link to="/admin/events/new">+ 이벤트 등록</Link>
+          <Link to="/admin/events/new" className="admin-action-button">
+            + 이벤트 등록
+          </Link>
         </header>
 
       {isLoading && <div>로딩중...</div>}
@@ -59,19 +59,26 @@ function AdminEventListPage() {
                     <EventStatusBadge status={event.status} />
                   </td>
                   <td>
-                    <Link to={`/admin/events/${event.id}/stats`}>보기 &gt;</Link>
+                    <Link to={`/admin/events/${event.id}/stats`} className="admin-action-button">
+                      보기 &gt;
+                    </Link>
                   </td>
                   <td>
-                    <Link to={`/admin/events/${event.id}/edit`}>수정</Link>
-                    {nextStatus && (
-                      <button
-                        type="button"
-                        onClick={() => statusMutation.mutate({ id: event.id, status: nextStatus })}
-                        disabled={statusMutation.isPending}
-                      >
-                        {nextStatus}로 변경
-                      </button>
-                    )}
+                    <div className="admin-table-actions">
+                      <Link to={`/admin/events/${event.id}/edit`} className="admin-action-button-outline">
+                        수정
+                      </Link>
+                      {nextStatus && (
+                        <button
+                          type="button"
+                          className="admin-action-button-outline"
+                          onClick={() => statusMutation.mutate({ id: event.id, status: nextStatus })}
+                          disabled={statusMutation.isPending}
+                        >
+                          {nextStatus}로 변경
+                        </button>
+                      )}
+                    </div>
                   </td>
                 </tr>
               );

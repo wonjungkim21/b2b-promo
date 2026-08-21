@@ -190,6 +190,24 @@ describe('EventDetailPage', () => {
     expect(screen.getByRole('button', { name: '응모 확정' })).toBeDisabled();
   });
 
+  it('응모 횟수가 최대 응모 가능 횟수를 초과하면 안내와 함께 응모 확정이 비활성화된다', async () => {
+    vi.stubGlobal(
+      'fetch',
+      mockFetchByPath({
+        '/events/1': jsonResponse(true, baseEvent()),
+        '/me': jsonResponse(true, { id: 1, name: '홍길동', role: 'user', pointBalance: 5500 }),
+      }),
+    );
+
+    renderPage();
+
+    const input = await screen.findByDisplayValue('1');
+    fireEvent.change(input, { target: { value: '6' } });
+
+    expect(await screen.findByText('최대 응모 가능 횟수를 초과했습니다.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '응모 확정' })).toBeDisabled();
+  });
+
   it('이벤트가 진행중이 아니면 응모 불가 안내와 비활성화 상태가 표시된다', async () => {
     vi.stubGlobal(
       'fetch',

@@ -1,6 +1,8 @@
+import { Link } from 'react-router-dom';
 import EventStatusBadge, { type EventStatus } from './EventStatusBadge';
 
 interface EventCardProps {
+  id: string;
   title: string;
   startAt: string;
   endAt: string;
@@ -14,7 +16,7 @@ function formatDate(iso: string): string {
   return `${mm}.${dd}`;
 }
 
-function EventCard({ title, startAt, endAt, status }: EventCardProps) {
+function EventCard({ id, title, startAt, endAt, status }: EventCardProps) {
   return (
     <div className="event-card">
       <EventStatusBadge status={status} />
@@ -22,6 +24,9 @@ function EventCard({ title, startAt, endAt, status }: EventCardProps) {
       <div className="event-card-period">
         {formatDate(startAt)} ~ {formatDate(endAt)}
       </div>
+      <Link to={`/events/${id}`} className="event-card-detail-button">
+        상세보기
+      </Link>
     </div>
   );
 }

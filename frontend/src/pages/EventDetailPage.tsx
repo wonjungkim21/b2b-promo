@@ -42,10 +42,12 @@ function EventDetailPage() {
   const isApplicable = isOngoing && maxApplyCount > 0;
 
   const parsedCount = parseCount(countInput);
-  const hasValidCount = parsedCount !== null;
+  const isValidCount = parsedCount !== null;
+  const exceedsMax = parsedCount !== null && parsedCount > maxApplyCount;
+  const hasValidCount = isValidCount && !exceedsMax;
 
-  const plannedPoints = hasValidCount ? getPlannedPoints(parsedCount) : null;
-  const remainingPoints = hasValidCount ? getRemainingPoints(pointBalance, parsedCount) : null;
+  const plannedPoints = isValidCount ? getPlannedPoints(parsedCount) : null;
+  const remainingPoints = isValidCount ? getRemainingPoints(pointBalance, parsedCount) : null;
 
   function handleDecrement() {
     const current = parseCount(countInput) ?? 1;
@@ -121,8 +123,11 @@ function EventDetailPage() {
               </button>
             </div>
 
-            {isApplicable && !hasValidCount && (
+            {isApplicable && !isValidCount && (
               <div className="event-section-notice">응모 횟수는 1 이상의 정수여야 합니다.</div>
+            )}
+            {isApplicable && exceedsMax && (
+              <div className="event-section-notice">최대 응모 가능 횟수를 초과했습니다.</div>
             )}
 
             <div>사용 예정 포인트: {plannedPoints !== null ? `${plannedPoints.toLocaleString()} P` : '-'}</div>

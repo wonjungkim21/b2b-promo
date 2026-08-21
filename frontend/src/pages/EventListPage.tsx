@@ -1,7 +1,5 @@
-import { Link } from 'react-router-dom';
 import PointBalanceBadge from '../components/PointBalanceBadge';
 import EventCard from '../components/EventCard';
-import TopNav from '../components/TopNav';
 import AppHeader from '../components/AppHeader';
 import { useEventList } from '../features/events/useEventList';
 
@@ -12,7 +10,6 @@ function EventListPage() {
     <div>
       <AppHeader />
       <div className="page-container">
-        <TopNav />
         <header>
           <PointBalanceBadge />
         </header>
@@ -26,14 +23,14 @@ function EventListPage() {
         {!isLoading && !isError && events && events.length > 0 && (
           <div className="event-grid">
             {events.map((event) => (
-              <Link key={event.id} to={`/events/${event.id}`}>
-                <EventCard
-                  title={event.title}
-                  startAt={event.startAt}
-                  endAt={event.endAt}
-                  status={event.status}
-                />
-              </Link>
+              <EventCard
+                key={event.id}
+                id={event.id}
+                title={event.title}
+                startAt={event.startAt}
+                endAt={event.endAt}
+                status={event.status}
+              />
             ))}
           </div>
         )}

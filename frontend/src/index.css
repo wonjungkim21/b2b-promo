@@ -117,6 +117,20 @@ code {
   text-decoration: none;
 }
 
+.app-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.app-header-logout {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
 .page-container {
   padding: 0 20px;
 }
@@ -206,6 +220,17 @@ code {
   color: var(--color-text-secondary);
 }
 
+.event-card-detail-button {
+  align-self: flex-start;
+  padding: 8px 16px;
+  border-radius: 8px;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+}
+
 @media (min-width: 768px) {
   .page-container {
     max-width: 960px;
@@ -293,6 +318,58 @@ code {
   cursor: not-allowed;
 }
 
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.admin-action-button {
+  display: inline-block;
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.admin-action-button:disabled {
+  background: var(--color-border);
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+}
+
+.admin-action-button-outline {
+  display: inline-block;
+  padding: 7px 14px;
+  border: 1px solid var(--color-primary);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--color-primary-dark);
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.admin-action-button-outline:disabled {
+  border-color: var(--color-border);
+  color: var(--color-text-secondary);
+  cursor: not-allowed;
+}
+
+.admin-table-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
 .admin-table {
   width: 100%;
   border-collapse: collapse;
@@ -303,6 +380,92 @@ code {
   text-align: left;
   padding: 8px;
   border-bottom: 1px solid var(--color-border);
+}
+
+.admin-stat-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.admin-stat-card {
+  flex: 1;
+  min-width: 140px;
+  padding: 16px;
+  border-radius: 12px;
+  background: var(--color-primary-tint);
+  text-align: center;
+}
+
+.admin-stat-label {
+  font-size: 13px;
+  color: var(--color-text-secondary);
+}
+
+.admin-stat-value {
+  font-size: 24px;
+  font-weight: 700;
+  color: var(--color-primary-dark);
+}
+
+.admin-form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  margin-top: 8px;
+}
+
+.admin-form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.admin-form-field input {
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 15px;
+  font-weight: 400;
+  color: var(--color-text-primary);
+  background: var(--color-surface);
+}
+
+.admin-form-radio-group {
+  border: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.admin-form-radio-group legend {
+  font-size: 14px;
+  font-weight: 600;
+  padding: 0;
+  margin: 0 0 6px;
+}
+
+.admin-form-radio-options {
+  display: flex;
+  gap: 16px;
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.admin-form-radio-options label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.admin-form-actions {
+  display: flex;
+  gap: 8px;
 }
 
 @media (max-width: 767px) {
